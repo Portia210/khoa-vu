@@ -1,4 +1,4 @@
-import { TRAVELOR_API } from "../constants"
+import { TRAVELOR_API, TRAVERLOR_CONFIG } from "../constants"
 
 class TravelorCrawlerService {
   constructor() {}
@@ -36,7 +36,7 @@ class TravelorCrawlerService {
       headers: {
         "Content-Type": "application/json",
         accept: "application/json, text/plain, */*",
-        authorization: "Bearer Nv2uH1uSSo2XCZratnQcBoUIrPkwrrMEQsCc4zz6"
+        authorization: TRAVERLOR_CONFIG.BEARER_TOKEN
       },
       body: JSON.stringify(body)
     })

@@ -7,6 +7,9 @@ export const TRAVELOR_API = {
   GET_HOTELS: "https://api.travelor.com/v3/session"
 }
 
+export const TRAVERLOR_CONFIG = {
+  BEARER_TOKEN: "Bearer Nv2uH1uSSo2XCZratnQcBoUIrPkwrrMEQsCc4zz6"
+}
 export enum TRAVELOR_SPECIFIC_STATES {}
 
 export const TRAVELOR_CRAWLER_FLOW_STATES = {
