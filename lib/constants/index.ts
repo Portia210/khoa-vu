@@ -1,6 +1,7 @@
 export type WorkerMessage = {
   type: string
   dataSource: string
+  tabId?: number,
   requestToken?: string
   access_token?: string
 }

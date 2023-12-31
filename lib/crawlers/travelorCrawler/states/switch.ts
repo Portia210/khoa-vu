@@ -1,4 +1,4 @@
-import { TRAVELOR_CRAWLER_FLOW_STATES } from "../constants";
+import { TRAVELOR_CRAWLER_FLOW_STATES } from "../constants"
 
 export const switchState = {
   [TRAVELOR_CRAWLER_FLOW_STATES.SWITCH]: {
@@ -11,13 +11,16 @@ export const switchState = {
       {
         target: `${TRAVELOR_CRAWLER_FLOW_STATES.AUTHENTICATION_ERROR}`,
         cond: (context: any, _: any) =>
-          context.targetState === TRAVELOR_CRAWLER_FLOW_STATES.AUTHENTICATION_ERROR,
+          context.targetState ===
+          TRAVELOR_CRAWLER_FLOW_STATES.AUTHENTICATION_ERROR
       },
       {
         target: `${TRAVELOR_CRAWLER_FLOW_STATES.IMPORT}`,
-        cond: (context: any, _: any) => context.targetState === TRAVELOR_CRAWLER_FLOW_STATES.IMPORT,
-      },
+        cond: (context: any, _: any) =>
+          context.targetState === TRAVELOR_CRAWLER_FLOW_STATES.IMPORT_COMPLETED
+      }
+
       /* TODO: Add any specific states here */
-    ],
-  },
-};
+    ]
+  }
+}

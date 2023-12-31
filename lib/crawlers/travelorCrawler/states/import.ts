@@ -1,21 +1,23 @@
-import {
-    AuthState,
-    DataSourceState,
-    DataState,
-    ImportState
-} from "~lib/framework/dataStores/types/dataImporterState"
 import type { DataImporterContext } from "~lib/framework/dataImporter/context"
+import {
+  AuthState,
+  DataSourceState,
+  DataState,
+  ImportState
+} from "~lib/framework/dataStores/types/dataImporterState"
 
 import { TRAVELOR_CRAWLER_FLOW_STATES } from "../constants"
+import { travelorCrawlerService } from "../service/TravelorCrawlerService"
 
 export const importState = {
   [TRAVELOR_CRAWLER_FLOW_STATES.IMPORT]: {
     invoke: {
       id: `${TRAVELOR_CRAWLER_FLOW_STATES.IMPORT}`,
       src: async (context: DataImporterContext, event: any) => {
-        // TODO: import data
-        console.log("importing data event", event)
-        console.log("importing data", context)
+        if (!event.tabId) throw new Error("TRAVELOR_CRAWLER_FLOW_STATES.IMPORT tabId is not defined")
+        const { finishedCurrentState } =
+          await travelorCrawlerService.importHotels(event.tabId)
+        context.finishedCurrentState = finishedCurrentState
       },
       onDone: {
         target: `${TRAVELOR_CRAWLER_FLOW_STATES.SWITCH}`
