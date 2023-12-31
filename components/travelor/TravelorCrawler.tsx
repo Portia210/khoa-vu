@@ -4,7 +4,11 @@ const TravelorCrawlerComponent = () => {
   const { startAuthentication } = useTravelorCrawlerStateStore()
   return (
     <>
-      <p className="text-red-300">TravelorCrawlerComponent</p>
+      <button
+        className="p-3 bg-green-300 w-full text-white font-bolder text-lg"
+        onClick={startAuthentication}>
+        Start Travelor Crawler
+      </button>
     </>
   )
 }

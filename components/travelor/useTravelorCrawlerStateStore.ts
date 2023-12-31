@@ -1,6 +1,6 @@
 import { create } from "zustand"
 
-import { ImportState } from "~lib/dataStores/types/dataImporterState"
+import { ImportState } from "~lib/framework/dataStores/types/dataImporterState"
 import { travelorCrawlerMediator } from "~lib/mediators/travelorCrawlerMediator"
 
 interface ImportStateStore {

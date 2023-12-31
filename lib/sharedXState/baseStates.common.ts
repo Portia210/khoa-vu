@@ -3,7 +3,7 @@ import {
   DataSourceState,
   DataState,
   ImportState
-} from "~lib/dataStores/types/dataImporterState"
+} from "~lib/framework/dataStores/types/dataImporterState"
 
 export enum BASE_STATES {
   AUTHENTICATION_CANCELLED = "authenticationCancelled",

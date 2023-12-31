@@ -1,7 +1,7 @@
 
 import { ImportMediatorType } from "~lib/constants"
 import { DATA_SOURCES } from "~lib/constants/dataSources"
-import { dataImporterDataStore } from "~lib/dataStores/dataImporterDataStore"
+import { dataImporterDataStore } from "~lib/framework/dataStores/dataImporterDataStore"
 import { PUBSUB_MESSAGES } from "~lib/framework/pubSubController/types/messages"
 import { ImportMediator } from "~lib/shared/importMediator"
 

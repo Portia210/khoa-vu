@@ -3,7 +3,7 @@ import {
   DataState,
   ErrorState,
   ImportState
-} from "~lib/dataStores/types/dataImporterState"
+} from "~lib/framework/dataStores/types/dataImporterState"
 import type { DataImporterContext } from "~lib/framework/dataImporter/context"
 import { calculateNextScheduleRunIntervalFromNow } from "~lib/framework/utils/calculateNextScheduleRunDate"
 

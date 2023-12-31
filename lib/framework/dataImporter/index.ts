@@ -1,7 +1,7 @@
 import { State, interpret, type AnyState, type StateMachine } from "xstate"
 
 import type { DataSourceType } from "~lib/constants/dataSources"
-import { dataImporterDataStore } from "~lib/dataStores/dataImporterDataStore"
+import { dataImporterDataStore } from "~lib/framework/dataStores/dataImporterDataStore"
 import {
   AuthState,
   DataSourceState,
@@ -9,7 +9,7 @@ import {
   ErrorState,
   ImportState,
   type DataImporterState
-} from "~lib/dataStores/types/dataImporterState"
+} from "~lib/framework/dataStores/types/dataImporterState"
 import { IMPORT_FLOW_STATES } from "~lib/sharedXState/importFlowStates.common"
 
 import { PubSubController } from "../pubSubController"

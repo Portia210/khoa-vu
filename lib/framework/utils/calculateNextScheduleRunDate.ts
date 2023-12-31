@@ -1,7 +1,7 @@
 import dayjs from "dayjs"
 
 import type { DATA_SOURCES } from "~lib/constants/dataSources"
-import { dataImporterDataStore } from "~lib/dataStores/dataImporterDataStore"
+import { dataImporterDataStore } from "~lib/framework/dataStores/dataImporterDataStore"
 
 import type { ScheduleUnit } from "../dataImporter/types/scheduleUnit"
 
