@@ -10,16 +10,24 @@
     "test": "plasmo test"
   },
   "dependencies": {
+    "dayjs": "^1.11.10",
+    "lodash": "^4.17.21",
     "plasmo": "0.84.0",
+    "pubsub-js": "^1.9.4",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "uuid": "^9.0.1",
+    "xstate": "^4.37.0",
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "4.1.1",
     "@types/chrome": "0.0.251",
     "@types/node": "20.9.0",
+    "@types/pubsub-js": "^1.8.6",
     "@types/react": "18.2.37",
     "@types/react-dom": "18.2.15",
+    "@types/uuid": "^9.0.7",
     "prettier": "3.0.3",
     "typescript": "5.2.2"
   },
