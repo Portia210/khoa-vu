@@ -1,46 +1,47 @@
-import type { DataSourceType } from "~lib/constants/dataSources";
+import type { DataSourceType } from "~lib/constants/dataSources"
+import type { ScheduleImportConfig } from "~lib/framework/dataImporter/types/scheduleUnit"
 
 /**
  * Import types
  */
 export enum ImportType {
-  ONE_TIME = 'onetime',
-  POLLING = 'polling',
+  ONE_TIME = "onetime",
+  POLLING = "polling"
 }
 
 /**
  * Import states
  */
 export enum ImportState {
-  AUTH_STARTED = 'auth-started',
-  COMPLETED = 'completed',
-  CRITICAL_ERROR = 'critical-error',
-  DISABLED = 'disabled',
-  ENABLED = 'enabled',
-  IMPORTING = 'importing',
-  PENDING_AUTH_LOGIN = 'pending-auth-login',
-  PENDING_UPLOAD = 'pending-upload',
-  REQUEST_EMAIL_AUTHENTICATION = 'request-email-authentication',
-  RETRY_IMPORT = 'retry-import',
-  UPLOADING = 'uploading',
-  UPLOAD_FILE_READY = 'upload-file-ready',
+  AUTH_STARTED = "auth-started",
+  COMPLETED = "completed",
+  CRITICAL_ERROR = "critical-error",
+  DISABLED = "disabled",
+  ENABLED = "enabled",
+  IMPORTING = "importing",
+  PENDING_AUTH_LOGIN = "pending-auth-login",
+  PENDING_UPLOAD = "pending-upload",
+  REQUEST_EMAIL_AUTHENTICATION = "request-email-authentication",
+  RETRY_IMPORT = "retry-import",
+  UPLOADING = "uploading",
+  UPLOAD_FILE_READY = "upload-file-ready"
 }
 
 /**
  * Data Importer State
  */
 export interface DataImporterState {
-  dataSourceName: DataSourceType;
-  importState: ImportState /* Keep our current internal import state */;
-  lastUpdated: Date;
-  dataSourceState?: DataSourceState;
-  authState?: AuthState;
-  dataState?: DataState;
-  errorState?: ErrorState;
-  errorMsg?: string;
-  machineVersion?: string;
-  currentState: string;
-  schedule?: ScheduleImportConfig;
+  dataSourceName: DataSourceType
+  importState: ImportState /* Keep our current internal import state */
+  lastUpdated: Date
+  dataSourceState?: DataSourceState
+  authState?: AuthState
+  dataState?: DataState
+  errorState?: ErrorState
+  errorMsg?: string
+  machineVersion?: string
+  currentState: string
+  schedule?: ScheduleImportConfig
 }
 
 /**
@@ -48,8 +49,8 @@ export interface DataImporterState {
  * https://ariagato.atlassian.net/wiki/spaces/GSE/pages/11436033/Front+End+Data+Source+Status+pre-SDK?focusedCommentId=12615682
  */
 export enum DataSourceState {
-  DISABLED = 'disabled',
-  ENABLED = 'enabled',
+  DISABLED = "disabled",
+  ENABLED = "enabled"
 }
 
 /**
@@ -57,8 +58,8 @@ export enum DataSourceState {
  * https://ariagato.atlassian.net/wiki/spaces/GSE/pages/11436033/Front+End+Data+Source+Status+pre-SDK?focusedCommentId=12615682
  */
 export enum AuthState {
-  AUTHENTICATED = 'authenticated',
-  PENDING_AUTH = 'pendingAuth',
+  AUTHENTICATED = "authenticated",
+  PENDING_AUTH = "pendingAuth"
 }
 
 /**
@@ -66,9 +67,9 @@ export enum AuthState {
  * https://ariagato.atlassian.net/wiki/spaces/GSE/pages/11436033/Front+End+Data+Source+Status+pre-SDK?focusedCommentId=12615682
  */
 export enum DataState {
-  DATA_RECEIVED = 'dataReceived',
-  FETCHING = 'fetching',
-  NO_DATA = 'noData',
+  DATA_RECEIVED = "dataReceived",
+  FETCHING = "fetching",
+  NO_DATA = "noData"
 }
 
 /**
@@ -76,5 +77,5 @@ export enum DataState {
  * https://ariagato.atlassian.net/wiki/spaces/GSE/pages/11436033/Front+End+Data+Source+Status+pre-SDK?focusedCommentId=12615682
  */
 export enum ErrorState {
-  ERROR = 'error',
+  ERROR = "error"
 }
