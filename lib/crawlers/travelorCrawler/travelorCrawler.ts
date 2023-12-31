@@ -27,7 +27,7 @@ class TravelorCrawler extends DataImporter {
   initializeImportMachine(): StateMachine<DataImporterContext, any, any> {
     return createMachine(
       {
-        id: "amazon-importer",
+        id: "travelor-crawler",
         version: "1",
         initial: TRAVELOR_CRAWLER_FLOW_STATES.DISABLED,
         context: {

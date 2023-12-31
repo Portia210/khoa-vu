@@ -1,4 +1,3 @@
-import { UPLOAD_FLOW_STATES } from './uploadFlowStates.common';
 
 export const commonImporterEvents = {
   on: {
@@ -40,17 +39,6 @@ export const commonUploaderEvents = {
     },
     REQUEST_EMAIL_AUTHENTICATION: {
       target: 'requestEmailAuthentication',
-    },
-    REQUEST_DATA: {
-      // request data start with request success check
-      target: UPLOAD_FLOW_STATES.REQUEST_DATA_SUCCESS_CHECK,
-    },
-    START_UPLOAD: {
-      // upload start with handling email link
-      target: UPLOAD_FLOW_STATES.UPLOAD_HANDLE_EMAIL_LINK,
-    },
-    UPLOAD: {
-      target: UPLOAD_FLOW_STATES.UPLOAD,
     },
   },
 };

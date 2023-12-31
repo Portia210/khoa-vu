@@ -1,21 +1,27 @@
-import Dexie from 'dexie';
-import { DataImporterState, ImportState, DataSourceState } from './types/dataImporterState';
-import { DataSourceType } from '@/constants/dataSources';
+import Dexie from "dexie"
 
-const DB_VERSION = 1;
-const DB_NAME = 'dataImporter';
+import type { DataSourceType } from "~lib/constants/dataSources"
+
+import {
+  DataSourceState,
+  ImportState,
+  type DataImporterState
+} from "./types/dataImporterState"
+
+const DB_VERSION = 1
+const DB_NAME = "dataImporter"
 
 /**
  * Data store to keep the importer state
  */
 class DataImporterDataStore extends Dexie {
-  states!: Dexie.Table<DataImporterState>;
+  states!: Dexie.Table<DataImporterState>
 
   constructor() {
-    super(DB_NAME);
+    super(DB_NAME)
     this.version(DB_VERSION).stores({
-      states: '&dataSourceName',
-    });
+      states: "&dataSourceName"
+    })
   }
 
   /**
@@ -23,18 +29,21 @@ class DataImporterDataStore extends Dexie {
    * @param dataSourceName
    * @param importState
    */
-  async setImportState(dataSourceName: DataSourceType, importState: ImportState) {
-    const state = await this.states.get(dataSourceName);
+  async setImportState(
+    dataSourceName: DataSourceType,
+    importState: ImportState
+  ) {
+    const state = await this.states.get(dataSourceName)
 
     const newState: DataImporterState = {
       ...state,
       dataSourceName,
       importState,
       lastUpdated: new Date(),
-      currentState: state?.currentState || '',
-    };
+      currentState: state?.currentState || ""
+    }
 
-    this.states.put(newState, 0);
+    this.states.put(newState, 0)
   }
 
   /**
@@ -43,15 +52,15 @@ class DataImporterDataStore extends Dexie {
    * @returns
    */
   async getStates(dataSourceName: string) {
-    const states = await this.states.get(dataSourceName);
+    const states = await this.states.get(dataSourceName)
     return {
       dataSourceState: states?.dataSourceState || DataSourceState.DISABLED,
       authState: states?.authState,
       dataState: states?.dataState,
-      errorState: states?.errorState,
-    };
+      errorState: states?.errorState
+    }
   }
 }
 
-const dataImporterDataStore = new DataImporterDataStore();
-export { dataImporterDataStore };
+const dataImporterDataStore = new DataImporterDataStore()
+export { dataImporterDataStore }
