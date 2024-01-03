@@ -7,13 +7,16 @@ import type {
   TravelorHotelStatus
 } from "../types"
 import { dataMapping } from "../utils/dataMapping"
+import { parseCommand } from "../utils/parseCommand"
 
 class TravelorCrawlerService {
+  command: any
   constructor() {}
 
-  async importHotels() {
+  async importHotels(command: any) {
     const sessionId = await this.getSession()
     const data = await this.getTravelorHotels(sessionId)
+    this.command = parseCommand(command)
     await this.onFinish(data)
     return {
       finishedCurrentState: true
@@ -33,23 +36,6 @@ class TravelorCrawlerService {
   }
 
   private async getSession() {
-    console.log("getting session")
-    const body = {
-      aggregator: "travolutionary",
-      type: "geoloc",
-      query_type: "destination",
-      latitude: 16.0544563,
-      longitude: 108.0717219,
-      radius: 500,
-      place_id: "ChIJEyolkscZQjERBn5yhkvL8B0",
-      check_in: "2024-01-06",
-      check_out: "2024-01-08",
-      country: "VN",
-      currency: "USD",
-      net: 0,
-      query_text: "Da Nang",
-      guests: "a"
-    }
     const response = await fetch(TRAVELOR_API.GET_SESSION, {
       method: "POST",
       credentials: "include",
@@ -59,7 +45,7 @@ class TravelorCrawlerService {
         accept: "application/json, text/plain, */*",
         authorization: TRAVERLOR_CONFIG.BEARER_TOKEN
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(this.command)
     }).then((res) => res.json())
     return response.session
   }

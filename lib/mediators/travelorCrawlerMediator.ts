@@ -11,7 +11,7 @@ class TravelorCrawlerMediator extends ImportMediator {
     super(DATA_SOURCES.TRAVELOR, ImportMediatorType.Direct)
   }
 
-  async startAuthentication(): Promise<void> {
+  async startAuthentication(command?: any): Promise<void> {
     this.postMessage({
       type: PUBSUB_MESSAGES.START_AUTHENTICATION,
       dataSource: DATA_SOURCES.TRAVELOR
@@ -22,7 +22,8 @@ class TravelorCrawlerMediator extends ImportMediator {
     if (currentState?.dataState === "fetching") return
     this.postMessage({
       type: PUBSUB_MESSAGES.IMPORT,
-      dataSource: DATA_SOURCES.TRAVELOR
+      dataSource: DATA_SOURCES.TRAVELOR,
+      data: command
     })
   }
 

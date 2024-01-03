@@ -19,7 +19,7 @@ export class CronJobs {
     if (!job) return
     if (job?.dataSource?.toLocaleLowerCase() === DATA_SOURCES.TRAVELOR) {
       console.log("Starting travelor crawler")
-      await travelorCrawlerMediator.startAuthentication()
+      await travelorCrawlerMediator.startAuthentication(job)
     } else if (job?.dataSource.toLocaleLowerCase() === DATA_SOURCES.BOOKING) {
       console.log("Starting booking crawler")
       await bookingCrawlerMediator.startAuthentication()

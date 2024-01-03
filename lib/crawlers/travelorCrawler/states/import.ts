@@ -13,9 +13,10 @@ export const importState = {
   [TRAVELOR_CRAWLER_FLOW_STATES.IMPORT]: {
     invoke: {
       id: `${TRAVELOR_CRAWLER_FLOW_STATES.IMPORT}`,
-      src: async (context: DataImporterContext, _: any) => {
+      src: async (context: DataImporterContext, event: any) => {
+        if (!event.data) throw Error("No command provided")
         const { finishedCurrentState } =
-          await travelorCrawlerService.importHotels()
+          await travelorCrawlerService.importHotels(event.data)
         context.finishedCurrentState = finishedCurrentState
       },
       onDone: {
