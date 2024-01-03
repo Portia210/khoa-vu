@@ -28,8 +28,15 @@ class TravelorCrawlerService {
     }
   }
 
-  private async onFinish(travelorHotelsData: TravelorHotelData[]) {
-    console.log("finished", travelorHotelsData)
+  private async onFinish(hotels: TravelorHotelData[]) {
+    const sync = await fetch(TRAVELOR_API.SYNC_URL, {
+      method: "POST",
+      body: JSON.stringify(hotels),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }).then((res) => res.json())
+    console.log("sync result:::", sync)
   }
 
   private async getSession(tabId: number) {
