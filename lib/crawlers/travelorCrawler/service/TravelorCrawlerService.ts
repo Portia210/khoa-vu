@@ -6,6 +6,7 @@ import type {
   TravelorHotelResponse,
   TravelorHotelStatus
 } from "../types"
+import { dataMapping } from "../utils/dataMapping"
 
 class TravelorCrawlerService {
   params = new URLSearchParams({
@@ -29,9 +30,10 @@ class TravelorCrawlerService {
   }
 
   private async onFinish(hotels: TravelorHotelData[]) {
+    const dataMapped = dataMapping(hotels)
     const sync = await fetch(TRAVELOR_API.SYNC_URL, {
       method: "POST",
-      body: JSON.stringify(hotels),
+      body: JSON.stringify(dataMapped),
       headers: {
         "Content-Type": "application/json"
       }
