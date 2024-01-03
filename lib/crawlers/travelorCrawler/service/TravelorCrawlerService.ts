@@ -11,8 +11,8 @@ import { dataMapping } from "../utils/dataMapping"
 class TravelorCrawlerService {
   constructor() {}
 
-  async importHotels(tabId: number) {
-    const sessionId = await this.getSession(tabId)
+  async importHotels() {
+    const sessionId = await this.getSession()
     const data = await this.getTravelorHotels(sessionId)
     await this.onFinish(data)
     return {
@@ -32,7 +32,7 @@ class TravelorCrawlerService {
     console.log("sync result:::", sync)
   }
 
-  private async getSession(tabId: number) {
+  private async getSession() {
     console.log("getting session")
     const body = {
       aggregator: "travolutionary",

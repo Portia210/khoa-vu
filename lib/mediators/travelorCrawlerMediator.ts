@@ -1,4 +1,4 @@
-import { closeTabById, createTab } from "~components/utils/chromeTabs"
+import { createTab, fuzzySearchTabs } from "~components/utils/chromeTabs"
 import { ImportMediatorType } from "~lib/constants"
 import { DATA_SOURCES } from "~lib/constants/dataSources"
 import { TRAVELOR_API } from "~lib/crawlers/travelorCrawler/constants"
@@ -16,27 +16,32 @@ class TravelorCrawlerMediator extends ImportMediator {
       type: PUBSUB_MESSAGES.START_AUTHENTICATION,
       dataSource: DATA_SOURCES.TRAVELOR
     })
-    await this.checkAuthentication()
-  }
-
-  async checkAuthentication(): Promise<void> {
-    const tab = await createTab({
-      active: false,
-      url: TRAVELOR_API.LOGIN_URL
-    })
-
-    if (!tab.id) {
-      return this.postMessage({
-        type: PUBSUB_MESSAGES.AUTHENTICATION_ERROR,
-        dataSource: DATA_SOURCES.TRAVELOR
-      })
-    }
-
+    const isAuth = await this.checkAuthentication()
+    if (!isAuth) return
+    const currentState = await this.getImporterStates()
+    if (currentState?.dataState === "fetching") return
     this.postMessage({
       type: PUBSUB_MESSAGES.IMPORT,
-      dataSource: DATA_SOURCES.TRAVELOR,
-      tabId: tab.id as number
+      dataSource: DATA_SOURCES.TRAVELOR
     })
+  }
+
+  async checkAuthentication(): Promise<boolean> {
+    const checkTabs = await fuzzySearchTabs(TRAVELOR_API.LOGIN_URL)
+    if (checkTabs?.length === 0) {
+      const tab = await createTab({
+        active: false,
+        url: TRAVELOR_API.LOGIN_URL
+      })
+      if (!tab.id) {
+        this.postMessage({
+          type: PUBSUB_MESSAGES.AUTHENTICATION_ERROR,
+          dataSource: DATA_SOURCES.TRAVELOR
+        })
+        return false
+      }
+    }
+    return true
   }
 
   async getImporterStates(): Promise<any> {

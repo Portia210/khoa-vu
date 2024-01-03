@@ -13,10 +13,9 @@ export const importState = {
   [TRAVELOR_CRAWLER_FLOW_STATES.IMPORT]: {
     invoke: {
       id: `${TRAVELOR_CRAWLER_FLOW_STATES.IMPORT}`,
-      src: async (context: DataImporterContext, event: any) => {
-        if (!event.tabId) throw new Error("TRAVELOR_CRAWLER_FLOW_STATES.IMPORT tabId is not defined")
+      src: async (context: DataImporterContext, _: any) => {
         const { finishedCurrentState } =
-          await travelorCrawlerService.importHotels(event.tabId)
+          await travelorCrawlerService.importHotels()
         context.finishedCurrentState = finishedCurrentState
       },
       onDone: {
