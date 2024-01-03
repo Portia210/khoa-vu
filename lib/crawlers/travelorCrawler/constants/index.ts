@@ -1,3 +1,4 @@
+import { BASE_URL } from "~lib/constants/enviroment"
 import { BASE_STATES } from "~lib/sharedXState/baseStates.common"
 import { IMPORT_FLOW_STATES } from "~lib/sharedXState/importFlowStates.common"
 
@@ -5,7 +6,7 @@ export const TRAVELOR_API = {
   LOGIN_URL: "https://www.travelor.com",
   GET_SESSION: "https://api.travelor.com/v3/sessions?locale=en",
   GET_HOTELS: "https://api.travelor.com/v3/session",
-  SYNC_URL: 'http://localhost:3000/api/travelor/sync',
+  SYNC_URL: `${BASE_URL}/api/travelor/sync`
 }
 
 export const TRAVERLOR_CONFIG = {

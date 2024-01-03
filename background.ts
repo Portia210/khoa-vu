@@ -1,22 +1,24 @@
 const onExtInstall = () => {
   chrome.tabs.create({
     active: true,
-    url: chrome.runtime.getURL('tabs/index.html'),
-  });
+    url: chrome.runtime.getURL("tabs/index.html")
+  })
 }
 
 const onExtIconClick = () => {
-  chrome.tabs.create({
-    active: true,
-    url: chrome.runtime.getURL('tabs/index.html'),
-  });
+  chrome.action.onClicked.addListener(async (msg) => {
+    chrome.tabs.create({
+      active: true,
+      url: chrome.runtime.getURL("tabs/index.html")
+    })
+  })
 }
 
 async function boot() {
-  onExtInstall();
-  onExtIconClick();
+  onExtInstall()
+  onExtIconClick()
 }
 
 boot().catch((e) => {
-  console.error(e);
-});
+  console.error(e)
+})

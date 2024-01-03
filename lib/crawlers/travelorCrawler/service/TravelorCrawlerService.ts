@@ -9,15 +9,6 @@ import type {
 import { dataMapping } from "../utils/dataMapping"
 
 class TravelorCrawlerService {
-  params = new URLSearchParams({
-    sort_by: "distance",
-    sort: "asc",
-    currency: "USD",
-    skip: "0",
-    take: "100",
-    locale: "en"
-  })
-
   constructor() {}
 
   async importHotels(tabId: number) {
@@ -46,17 +37,18 @@ class TravelorCrawlerService {
     const body = {
       aggregator: "travolutionary",
       type: "geoloc",
-      latitude: "48.856614",
-      longitude: "2.3522219",
-      radius: "50000",
-      check_in: "2024-01-11",
-      check_out: "2024-01-31",
+      query_type: "destination",
+      latitude: 16.0544563,
+      longitude: 108.0717219,
+      radius: 500,
+      place_id: "ChIJEyolkscZQjERBn5yhkvL8B0",
+      check_in: "2024-01-06",
+      check_out: "2024-01-08",
       country: "VN",
       currency: "USD",
       net: 0,
-      query_type: "destination",
-      query_text: "Paris",
-      guests: "a,a"
+      query_text: "Da Nang",
+      guests: "a"
     }
     const response = await fetch(TRAVELOR_API.GET_SESSION, {
       method: "POST",
@@ -69,7 +61,6 @@ class TravelorCrawlerService {
       },
       body: JSON.stringify(body)
     }).then((res) => res.json())
-    console.log("session:::", response)
     return response.session
   }
 
@@ -83,14 +74,14 @@ class TravelorCrawlerService {
         sort: "asc",
         currency: "USD",
         skip: "0",
-        take: "100",
+        take: "48",
         locale: "en"
       })
     }
     const data = await this.getTravelorHotelData(sessionId, params)
     const { totalResults, status } = await this.getResponseStatus(data)
     if (status === "running") {
-      await sleep(1500)
+      await sleep(2000)
       const params = new URLSearchParams({
         sort_by: "distance",
         sort: "asc",
