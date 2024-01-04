@@ -11,7 +11,8 @@ const dataMapping = (travelorHotelsData: TravelorHotelData[]) => {
       country: hotel?.hotel.country,
       facilities: hotel?.hotel.facilities,
       stars: hotel?.stars,
-      rating: hotel?.hotel?.star_rating
+      rating: hotel?.hotel?.star_rating,
+      reviews: hotel?.reviews
     }
   })
 }

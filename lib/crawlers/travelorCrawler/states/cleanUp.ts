@@ -1,26 +1,22 @@
 import type { DataImporterContext } from "~lib/framework/dataImporter/context"
 import {
-  AuthState,
-  DataSourceState,
-  DataState,
-  ImportState
+    AuthState,
+    DataSourceState,
+    DataState,
+    ImportState
 } from "~lib/framework/dataStores/types/dataImporterState"
 
 import { TRAVELOR_CRAWLER_FLOW_STATES } from "../constants"
-import { travelorCrawlerService } from "../service/TravelorCrawlerService"
 
-export const importState = {
-  [TRAVELOR_CRAWLER_FLOW_STATES.IMPORT]: {
+export const cleanUpState = {
+  [TRAVELOR_CRAWLER_FLOW_STATES.CLEAN_UP]: {
     invoke: {
-      id: `${TRAVELOR_CRAWLER_FLOW_STATES.IMPORT}`,
+      id: `${TRAVELOR_CRAWLER_FLOW_STATES.CLEAN_UP}`,
       src: async (context: DataImporterContext, event: any) => {
-        if (!event.data) throw Error("No command provided")
-        const { finishedCurrentState } =
-          await travelorCrawlerService.importHotels(event.data)
-        context.finishedCurrentState = finishedCurrentState
+        console.log("cleanUpState.....")
       },
       onDone: {
-        target: `${TRAVELOR_CRAWLER_FLOW_STATES.CLEAN_UP}`
+        target: `${TRAVELOR_CRAWLER_FLOW_STATES.SWITCH}`
       },
       onError: {
         target: `${TRAVELOR_CRAWLER_FLOW_STATES.IMPORT_ERROR}`,
@@ -31,9 +27,9 @@ export const importState = {
       }
     },
     meta: {
-      importState: ImportState.IMPORTING,
+      importState: ImportState.COMPLETED,
       authState: AuthState.AUTHENTICATED,
-      dataState: DataState.FETCHING,
+      dataState: DataState.DATA_RECEIVED,
       dataSourceState: DataSourceState.ENABLED
     }
   }

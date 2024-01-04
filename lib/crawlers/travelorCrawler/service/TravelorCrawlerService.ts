@@ -1,3 +1,4 @@
+import { updateJobStatus } from "~lib/framework/utils/updateJobStatus"
 import { sleep } from "~utils/sleep"
 
 import { TRAVELOR_API, TRAVERLOR_CONFIG } from "../constants"
@@ -6,17 +7,17 @@ import type {
   TravelorHotelResponse,
   TravelorHotelStatus
 } from "../types"
+import { commandMapper } from "../utils/commandMapper"
 import { dataMapping } from "../utils/dataMapping"
-import { parseCommand } from "../utils/parseCommand"
 
 class TravelorCrawlerService {
   command: any
   constructor() {}
 
   async importHotels(command: any) {
+    this.command = commandMapper(command)
     const sessionId = await this.getSession()
     const data = await this.getTravelorHotels(sessionId)
-    this.command = parseCommand(command)
     await this.onFinish(data)
     return {
       finishedCurrentState: true
@@ -25,14 +26,14 @@ class TravelorCrawlerService {
 
   private async onFinish(hotels: TravelorHotelData[]) {
     const dataMapped = dataMapping(hotels)
-    const sync = await fetch(TRAVELOR_API.SYNC_URL, {
+    await fetch(TRAVELOR_API.SYNC_URL, {
       method: "POST",
       body: JSON.stringify(dataMapped),
       headers: {
         "Content-Type": "application/json"
       }
     }).then((res) => res.json())
-    console.log("sync result:::", sync)
+    await updateJobStatus(this.command, "FINISHED")
   }
 
   private async getSession() {

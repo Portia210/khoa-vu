@@ -4,6 +4,7 @@ import { DATA_SOURCES } from "~lib/constants/dataSources"
 import { TRAVELOR_API } from "~lib/crawlers/travelorCrawler/constants"
 import { dataImporterDataStore } from "~lib/framework/dataStores/dataImporterDataStore"
 import { PUBSUB_MESSAGES } from "~lib/framework/pubSubController/types/messages"
+import { updateJobStatus } from "~lib/framework/utils/updateJobStatus"
 import { ImportMediator } from "~lib/shared/importMediator"
 
 class TravelorCrawlerMediator extends ImportMediator {
@@ -25,6 +26,7 @@ class TravelorCrawlerMediator extends ImportMediator {
       dataSource: DATA_SOURCES.TRAVELOR,
       data: command
     })
+    await updateJobStatus(command, "RUNNING")
   }
 
   async checkAuthentication(): Promise<boolean> {
