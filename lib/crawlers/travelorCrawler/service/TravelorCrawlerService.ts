@@ -11,32 +11,36 @@ import { commandMapper } from "../utils/commandMapper"
 import { dataMapping } from "../utils/dataMapping"
 
 class TravelorCrawlerService {
-  command: any
   constructor() {}
 
   async importHotels(command: any) {
-    this.command = commandMapper(command)
-    const sessionId = await this.getSession()
+    await updateJobStatus(command, "RUNNING")
+    const commandMapped = commandMapper(command)
+    const sessionId = await this.getSession(commandMapped)
     const data = await this.getTravelorHotels(sessionId)
-    await this.onFinish(data)
+    await this.onFinish(command, data)
     return {
       finishedCurrentState: true
     }
   }
 
-  private async onFinish(hotels: TravelorHotelData[]) {
+  private async onFinish(command: any, hotels: TravelorHotelData[]) {
     const dataMapped = dataMapping(hotels)
-    await fetch(TRAVELOR_API.SYNC_URL, {
-      method: "POST",
-      body: JSON.stringify(dataMapped),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }).then((res) => res.json())
-    await updateJobStatus(this.command, "FINISHED")
+    await Promise.allSettled([
+      fetch(TRAVELOR_API.SYNC_URL, {
+        method: "POST",
+        body: JSON.stringify(dataMapped),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then((res) => res.json()),
+      updateJobStatus(command, "FINISHED")
+    ]).catch((err) => {
+      console.error("error on onFinish", err)
+    })
   }
 
-  private async getSession() {
+  private async getSession(command: any) {
     const response = await fetch(TRAVELOR_API.GET_SESSION, {
       method: "POST",
       credentials: "include",
@@ -46,7 +50,7 @@ class TravelorCrawlerService {
         accept: "application/json, text/plain, */*",
         authorization: TRAVERLOR_CONFIG.BEARER_TOKEN
       },
-      body: JSON.stringify(this.command)
+      body: JSON.stringify(command)
     }).then((res) => res.json())
     return response.session
   }

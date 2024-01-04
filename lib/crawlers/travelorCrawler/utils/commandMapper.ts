@@ -16,7 +16,5 @@ export const commandMapper = (command: any) => {
     query_text: command?.destination?.destination,
     guests: "a"
   }
-
-  console.log("commandMapper result:", result)
   return result
 }
