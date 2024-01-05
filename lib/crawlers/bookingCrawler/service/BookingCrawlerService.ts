@@ -29,7 +29,7 @@ class BookingCrawlerService {
           "Content-Type": "application/json"
         }
       })
-      .then((res) => res.data)
+      .then((res) => res.data.data)
     const hotelResults = response?.searchQueries.search.results
     const hotelFiltered = filterBookingHotel(hotelResults)
     console.log("hotelFiltered --->", hotelFiltered)

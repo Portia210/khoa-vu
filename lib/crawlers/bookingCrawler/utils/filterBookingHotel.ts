@@ -1,3 +1,4 @@
+import { BOOKING_API } from "../constants"
 import type {
   BookingBasicPropertyData,
   BookingHotelPhotos,
@@ -28,5 +29,5 @@ const getBookingLink = (
 const getHotelPhotos = (photo: BookingHotelPhotos): string => {
   const highJpeg = photo?.main?.highResJpegUrl?.relativeUrl
   const highWebp = photo?.main?.highResUrl?.relativeUrl
-  return highJpeg || highWebp
+  return `${BOOKING_API.BASE_IMG_URL}${highJpeg || highWebp}`
 }
