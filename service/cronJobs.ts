@@ -7,12 +7,12 @@ import type { CrawlerJobDto } from "./types/CrawlerJobDto"
 
 export class CronJobs {
   static async fetchJobs() {
-    setInterval(async () => {
-      const jobs: CrawlerJobDto[] = await fetch(`${BASE_URL}/api/jobs`).then(
-        (res) => res.json()
-      )
-      CronJobs.handleCronJobResult(jobs.shift())
-    }, 3000)
+    // setInterval(async () => {
+    //   const jobs: CrawlerJobDto[] = await fetch(`${BASE_URL}/api/jobs`).then(
+    //     (res) => res.json()
+    //   )
+    //   CronJobs.handleCronJobResult(jobs.shift())
+    // }, 3000)
   }
 
   private static async handleCronJobResult(job: CrawlerJobDto) {

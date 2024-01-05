@@ -5,18 +5,15 @@ import {
   DataState,
   ImportState
 } from "~lib/framework/dataStores/types/dataImporterState"
-
 import { BOOKING_CRAWLER_FLOW_STATES } from "../constants"
-import { bookingCrawlerService } from "../service/BookingCrawlerService"
 
-export const importState = {
-  [BOOKING_CRAWLER_FLOW_STATES.IMPORT]: {
+
+export const cleanUpState = {
+  [BOOKING_CRAWLER_FLOW_STATES.CLEAN_UP]: {
     invoke: {
-      id: `${BOOKING_CRAWLER_FLOW_STATES.IMPORT}`,
+      id: `${BOOKING_CRAWLER_FLOW_STATES.CLEAN_UP}`,
       src: async (context: DataImporterContext, event: any) => {
-        const { finishedCurrentState } =
-          await bookingCrawlerService.importHotels()
-        context.finishedCurrentState = finishedCurrentState
+        console.log("cleanUpState.....")
       },
       onDone: {
         target: `${BOOKING_CRAWLER_FLOW_STATES.SWITCH}`
@@ -30,9 +27,9 @@ export const importState = {
       }
     },
     meta: {
-      importState: ImportState.IMPORTING,
+      importState: ImportState.COMPLETED,
       authState: AuthState.AUTHENTICATED,
-      dataState: DataState.FETCHING,
+      dataState: DataState.DATA_RECEIVED,
       dataSourceState: DataSourceState.ENABLED
     }
   }

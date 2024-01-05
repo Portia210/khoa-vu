@@ -39,6 +39,7 @@ class BookingCrawler extends DataImporter {
         states: {
           ...commonImportFlowStates,
           ...states.importState,
+          ...states.cleanUpState,
           ...states.switchState
         },
         ...commonImporterEvents

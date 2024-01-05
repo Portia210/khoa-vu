@@ -6,7 +6,7 @@ export const switchState = {
       {
         target: `${BOOKING_CRAWLER_FLOW_STATES.IMPORT_COMPLETED}`,
         cond: (context: any, _: any) =>
-          context.targetState === BOOKING_CRAWLER_FLOW_STATES.IMPORT_COMPLETED,
+          context.targetState === BOOKING_CRAWLER_FLOW_STATES.IMPORT_COMPLETED
       },
       {
         target: `${BOOKING_CRAWLER_FLOW_STATES.AUTHENTICATION_ERROR}`,
@@ -16,6 +16,11 @@ export const switchState = {
       },
       {
         target: `${BOOKING_CRAWLER_FLOW_STATES.IMPORT}`,
+        cond: (context: any, _: any) =>
+          context.targetState === BOOKING_CRAWLER_FLOW_STATES.IMPORT
+      },
+      {
+        target: `${BOOKING_CRAWLER_FLOW_STATES.CLEAN_UP}`,
         cond: (context: any, _: any) =>
           context.targetState === BOOKING_CRAWLER_FLOW_STATES.IMPORT_COMPLETED
       }
