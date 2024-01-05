@@ -37,8 +37,8 @@ export const defaultGraphqlVariablesInput: BOOKING_VARIABLES_INPUT = {
       testProperties: false
     },
     pagination: {
-      rowsPerPage: 25,
-      offset: 25
+      rowsPerPage: 100,
+      offset: 0
     },
     referrerBlock: null,
     sorters: {

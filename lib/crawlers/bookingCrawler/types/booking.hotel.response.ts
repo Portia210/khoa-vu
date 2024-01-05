@@ -8,14 +8,10 @@ export interface SearchQueries {
 
 export interface Search {
   destinationLocation: DestinationLocation
-  rocketmilesSearchUuid: any
   searchMeta: SearchMeta
-  recommendedFilterOptions: any[]
   filters: Filter[]
   pagination: Pagination
-  results: Result[]
-  oneOfThreeDeal: any
-  tripTypes: any
+  results: BookingHotelResult[]
 }
 
 export interface DestinationLocation {
@@ -112,18 +108,17 @@ export interface Option {
   trackOnView: any[]
   count: number
   trackOnDeSelectPopular: any[]
-  trackOnClick: any[]
   trackOnClickPopular: any[]
   value: Value
   trackOnDeSelect: any[]
 }
 
 export interface StarRating {
-  showAdditionalInfoIcon: boolean
-  value: number
-  symbol: string
-  __typename: string
+  tocLink: TocLink
   caption: Caption
+  showAdditionalInfoIcon: boolean
+  symbol: string
+  value: number
 }
 
 export interface Caption {
@@ -172,7 +167,6 @@ export interface FilterLayout {
 
 export interface StepperOption {
   trackOnIncrease: any[]
-  trackOnClick: any[]
   min: number
   field: string
   default: number
@@ -245,7 +239,7 @@ export interface Pagination {
   nbResultsTotal: number
 }
 
-export interface Result {
+export interface BookingHotelResult {
   relocationMode: any
   blocks: Block[]
   matchingUnitConfigurations: MatchingUnitConfigurations
@@ -276,7 +270,7 @@ export interface Result {
   recommendedDate: RecommendedDate
   ribbon?: Ribbon
   hostTraderLabel: string
-  basicPropertyData: BasicPropertyData
+  basicPropertyData: BookingBasicPropertyData
   __typename: string
   licenseDetails: any
   location: Location
@@ -550,7 +544,7 @@ export interface AmountPerStay {
 
 export interface ExcludeChargesAggregated {
   copy: Copy
-  amountPerStay: AmountPerStay2
+  amountPerStay: AmountPerStay
   __typename: string
 }
 
@@ -559,26 +553,10 @@ export interface Copy {
   translation: any
 }
 
-export interface AmountPerStay2 {
-  currency: string
-  amount: string
-  __typename: string
-  amountUnformatted: number
-  amountRounded: string
-}
-
 export interface DisplayPrice {
-  amountPerStay: AmountPerStay3
+  amountPerStay: AmountPerStay
   __typename: string
   copy: Copy2
-}
-
-export interface AmountPerStay3 {
-  amountUnformatted: number
-  amountRounded: string
-  currency: string
-  __typename: string
-  amount: string
 }
 
 export interface Copy2 {
@@ -592,17 +570,9 @@ export interface ChargesInfo {
 }
 
 export interface PriceBeforeDiscount {
-  amountPerStay: AmountPerStay4
+  amountPerStay: AmountPerStay
   __typename: string
   copy: Copy3
-}
-
-export interface AmountPerStay4 {
-  amountUnformatted: number
-  amountRounded: string
-  currency: string
-  amount: string
-  __typename: string
 }
 
 export interface Copy3 {
@@ -664,20 +634,12 @@ export interface Rewards {
 export interface RewardsAggregated {
   copy: Copy4
   __typename: string
-  amountPerStay: AmountPerStay5
+  amountPerStay: AmountPerStay
 }
 
 export interface Copy4 {
   translation: string
   __typename: string
-}
-
-export interface AmountPerStay5 {
-  currency: string
-  amount: string
-  __typename: string
-  amountUnformatted: number
-  amountRounded: string
 }
 
 export interface RecommendedDate {
@@ -693,12 +655,12 @@ export interface Ribbon {
   text: string
 }
 
-export interface BasicPropertyData {
+export interface BookingBasicPropertyData {
   __typename: string
-  photos: Photos
+  photos: BookingHotelPhotos
   location: Location
   accommodationTypeId: number
-  starRating?: StarRating2
+  starRating?: StarRating
   pageName: string
   isTestProperty: boolean
   isClosed: boolean
@@ -709,7 +671,7 @@ export interface BasicPropertyData {
   alternativeExternalReviewsScore: any
 }
 
-export interface Photos {
+export interface BookingHotelPhotos {
   __typename: string
   main: Main
 }
@@ -749,22 +711,8 @@ export interface Location {
   city: string
 }
 
-export interface StarRating2 {
-  tocLink: TocLink
-  caption: Caption2
-  showAdditionalInfoIcon: boolean
-  __typename: string
-  symbol: string
-  value: number
-}
-
 export interface TocLink {
   translation?: string
-  __typename: string
-}
-
-export interface Caption2 {
-  translation: string
   __typename: string
 }
 
