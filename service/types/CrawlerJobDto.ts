@@ -4,9 +4,7 @@ export interface CrawlerJobDto {
   destination: string
   checkInDate: string
   checkOutDate: string
-  adult: number
-  children: number
-  rooms: number
+  guests: string
   status: string
   createdAt: string
   updatedAt: string

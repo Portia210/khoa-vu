@@ -14,7 +14,7 @@ export const commandMapper = (command: any) => {
     currency: "USD",
     net: 0,
     query_text: command?.destination?.destination,
-    guests: "a"
+    guests: command?.guests || "a"
   }
   return result
 }

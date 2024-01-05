@@ -18,14 +18,18 @@ class TravelorCrawlerService {
     const commandMapped = commandMapper(command)
     const sessionId = await this.getSession(commandMapped)
     const data = await this.getTravelorHotels(sessionId)
-    await this.onFinish(command, data)
+    await this.onFinish(command, sessionId, data)
     return {
       finishedCurrentState: true
     }
   }
 
-  private async onFinish(command: any, hotels: TravelorHotelData[]) {
-    const dataMapped = dataMapping(hotels)
+  private async onFinish(
+    command: any,
+    sessionId: string,
+    hotels: TravelorHotelData[]
+  ) {
+    const dataMapped = dataMapping(command, sessionId, hotels)
     await Promise.allSettled([
       fetch(TRAVELOR_API.SYNC_URL, {
         method: "POST",
