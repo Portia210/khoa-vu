@@ -2,15 +2,18 @@ import axios from "axios"
 
 import { BOOKING_API } from "../constants"
 import { defaultGraphqlVariablesInput, graphqlQuery } from "../constants/api"
-import type { BookingHotelResponse } from "../types/booking.hotel.response"
-import { filterBookingHotel } from "../utils/filterBookingHotel"
+import type {
+  BookingHotelResponse,
+  BookingHotelResult
+} from "../types/booking.hotel.response"
+import { dataMapping } from "../utils/dataMapping"
 
 class BookingCrawlerService {
   constructor() {}
 
   async importHotels(): Promise<any> {
-    await this.getBookingHotels()
-    await this.onFinish()
+    const hotelResults = await this.getBookingHotels()
+    await this.onFinish(hotelResults)
     return {
       finishedCurrentState: true
     }
@@ -30,13 +33,23 @@ class BookingCrawlerService {
         }
       })
       .then((res) => res.data.data)
-    const hotelResults = response?.searchQueries.search.results
-    const hotelFiltered = filterBookingHotel(hotelResults)
-    console.log("hotelFiltered --->", hotelFiltered)
+    return response?.searchQueries.search.results
   }
 
-  private async onFinish() {
-    console.log("onFinish")
+  private async onFinish(hotelResults: BookingHotelResult[]) {
+    const hotelFiltered = dataMapping(hotelResults)
+    await Promise.allSettled([
+      fetch(BOOKING_API.SYNC_URL, {
+        method: "POST",
+        body: JSON.stringify(hotelFiltered),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then((res) => res.json())
+      // updateJobStatus(command, "FINISHED")
+    ]).catch((err) => {
+      console.error("error on onFinish", err)
+    })
   }
 }
 

@@ -273,7 +273,7 @@ export interface BookingHotelResult {
   basicPropertyData: BookingBasicPropertyData
   __typename: string
   licenseDetails: any
-  location: Location
+  location: HotelLocation
   badges: any[]
   showGeniusLoginMessage: boolean
 }
@@ -555,13 +555,7 @@ export interface Copy {
 
 export interface DisplayPrice {
   amountPerStay: AmountPerStay
-  __typename: string
-  copy: Copy2
-}
-
-export interface Copy2 {
-  __typename: string
-  translation: string
+  copy: Copy
 }
 
 export interface ChargesInfo {
@@ -572,24 +566,14 @@ export interface ChargesInfo {
 export interface PriceBeforeDiscount {
   amountPerStay: AmountPerStay
   __typename: string
-  copy: Copy3
-}
-
-export interface Copy3 {
-  __typename: string
-  translation?: string
+  copy: Copy
 }
 
 export interface Badge {
   identifier: string
-  name: Name2
+  name: Name
   tooltip: Tooltip
   style: string
-  __typename: string
-}
-
-export interface Name2 {
-  translation: string
   __typename: string
 }
 
@@ -600,16 +584,11 @@ export interface Tooltip {
 
 export interface Discount {
   itemType: string
-  name: Name3
+  name: Name
   __typename: string
   description: Description
   amount: Amount
   productId: string
-}
-
-export interface Name3 {
-  __typename: string
-  translation: string
 }
 
 export interface Description {
@@ -632,14 +611,9 @@ export interface Rewards {
 }
 
 export interface RewardsAggregated {
-  copy: Copy4
+  copy: Copy
   __typename: string
   amountPerStay: AmountPerStay
-}
-
-export interface Copy4 {
-  translation: string
-  __typename: string
 }
 
 export interface RecommendedDate {
@@ -658,7 +632,7 @@ export interface Ribbon {
 export interface BookingBasicPropertyData {
   __typename: string
   photos: BookingHotelPhotos
-  location: Location
+  location: HotelLocation
   accommodationTypeId: number
   starRating?: StarRating
   pageName: string
@@ -745,7 +719,7 @@ export interface ExternalReviewScore {
   score: number
 }
 
-export interface Location {
+export interface HotelLocation {
   displayLocation: string
   beachWalkingTime: any
   mainDistance: string

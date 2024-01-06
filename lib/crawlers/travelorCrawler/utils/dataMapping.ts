@@ -20,7 +20,6 @@ const dataMapping = (
       country: hotel?.hotel.country,
       facilities: hotel?.hotel.facilities,
       stars: hotel?.stars,
-      rating: hotel?.hotel?.star_rating,
       reviews: hotel?.reviews
     }
   })
