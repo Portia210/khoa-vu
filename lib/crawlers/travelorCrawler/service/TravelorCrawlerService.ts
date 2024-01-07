@@ -9,11 +9,12 @@ import type {
 } from "../types"
 import { commandMapper } from "../utils/commandMapper"
 import { dataMapping } from "../utils/dataMapping"
+import type { CrawlerCommand } from "~lib/shared/types/CrawlerCommand"
 
 class TravelorCrawlerService {
   constructor() {}
 
-  async importHotels(command: any) {
+  async importHotels(command: CrawlerCommand) {
     await updateJobStatus(command, "RUNNING")
     const commandMapped = commandMapper(command)
     const sessionId = await this.getSession(commandMapped)

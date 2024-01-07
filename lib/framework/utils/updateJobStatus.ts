@@ -1,6 +1,7 @@
 import { BASE_URL } from "~lib/constants/enviroment"
+import type { CrawlerCommand } from "~lib/shared/types/CrawlerCommand"
 
-const updateJobStatus = async (job: any, status = "RUNNING") => {
+const updateJobStatus = async (job: CrawlerCommand, status = "RUNNING") => {
   try {
     if (!job._id) throw new Error("Job id is required")
     const payload = {

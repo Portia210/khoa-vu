@@ -1,11 +1,9 @@
 import dayjs from "dayjs"
-
-import type { CrawlerJobDto } from "~service/types/CrawlerJobDto"
-
+import type { CrawlerCommand } from "~lib/shared/types/CrawlerCommand"
 import type { TravelorHotelData } from "../types"
 
 const dataMapping = (
-  command: CrawlerJobDto,
+  command: CrawlerCommand,
   sessionId: string,
   travelorHotelsData: TravelorHotelData[]
 ) => {
@@ -26,7 +24,7 @@ const dataMapping = (
 }
 
 const createTravelorLink = (
-  command: CrawlerJobDto,
+  command: CrawlerCommand,
   sessionId: string,
   orginalLink: string
 ) => {

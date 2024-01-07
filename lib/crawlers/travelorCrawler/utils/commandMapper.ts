@@ -1,6 +1,7 @@
 import dayjs from "dayjs"
+import type { CrawlerCommand } from "~lib/shared/types/CrawlerCommand"
 
-export const commandMapper = (command: any) => {
+export const commandMapper = (command: CrawlerCommand) => {
   const result = {
     aggregator: "travolutionary",
     type: "geoloc",
