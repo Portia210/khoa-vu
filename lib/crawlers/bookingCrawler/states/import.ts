@@ -14,12 +14,13 @@ export const importState = {
     invoke: {
       id: `${BOOKING_CRAWLER_FLOW_STATES.IMPORT}`,
       src: async (context: DataImporterContext, event: any) => {
+        if (!event.data) throw Error("No command provided")
         const { finishedCurrentState } =
-          await bookingCrawlerService.importHotels()
+          await bookingCrawlerService.importHotels(event.data)
         context.finishedCurrentState = finishedCurrentState
       },
       onDone: {
-        target: `${BOOKING_CRAWLER_FLOW_STATES.SWITCH}`
+        target: `${BOOKING_CRAWLER_FLOW_STATES.CLEAN_UP}`
       },
       onError: {
         target: `${BOOKING_CRAWLER_FLOW_STATES.IMPORT_ERROR}`,

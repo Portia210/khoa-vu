@@ -18,6 +18,7 @@ class BookingCrawlerService {
   async importHotels(command: CrawlerCommand): Promise<any> {
     await updateJobStatus(command, "RUNNING")
     const commandMapped = commandMapper(command)
+    console.log("commandMapped:::-->", commandMapped)
     const hotelResults = await this.getBookingHotels(commandMapped)
     await this.onFinish(command, hotelResults)
     return {
@@ -42,7 +43,7 @@ class BookingCrawlerService {
   }
 
   private async onFinish(command: CrawlerCommand, hotelResults: BookingHotelResult[]) {
-    const hotelFiltered = dataMapping(hotelResults)
+    const hotelFiltered = dataMapping(command, hotelResults)
     await Promise.allSettled([
       fetch(BOOKING_API.SYNC_URL, {
         method: "POST",
