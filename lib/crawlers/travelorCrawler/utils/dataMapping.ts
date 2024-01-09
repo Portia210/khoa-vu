@@ -18,7 +18,8 @@ const dataMapping = (
       country: hotel?.hotel.country,
       facilities: hotel?.hotel.facilities,
       stars: hotel?.stars,
-      reviews: hotel?.reviews
+      reviews: hotel?.reviews,
+      jobId: command?._id,
     }
   })
 }

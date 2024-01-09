@@ -15,6 +15,7 @@ export const dataMapping = (
 ) => {
   return hotelResults?.map((hotelResult) => {
     return {
+      hotel_id: hotelResult?.basicPropertyData?.id,
       title: hotelResult?.displayName?.text,
       picture_link: getHotelPhoto(hotelResult?.basicPropertyData?.photos),
       booking_link: getBookingLink(command, hotelResult?.basicPropertyData),
@@ -22,7 +23,8 @@ export const dataMapping = (
       rate: hotelResult?.basicPropertyData?.reviewScore?.score,
       reviews: hotelResult?.basicPropertyData?.reviewScore,
       stars: hotelResult?.basicPropertyData?.starRating?.value,
-      distance: hotelResult?.location?.mainDistance
+      distance: hotelResult?.location?.mainDistance,
+      jobId: command?._id,
     }
   })
 }
