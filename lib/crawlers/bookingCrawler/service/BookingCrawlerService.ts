@@ -27,6 +27,7 @@ class BookingCrawlerService {
 
   private async getBookingHotels(variables: any) {
     const results = []
+    const resultLimit = 1000;
     let pagination
     let paginationInput = {
       offset: 0,
@@ -55,7 +56,7 @@ class BookingCrawlerService {
       }
       pagination = await fetchBookingHotels(payload)
       paginationInput.offset += paginationInput.rowsPerPage
-    } while (paginationInput.offset < pagination.nbResultsTotal)
+    } while (paginationInput.offset < pagination.nbResultsTotal && paginationInput.offset < resultLimit)
 
     return results.flat()
   }
