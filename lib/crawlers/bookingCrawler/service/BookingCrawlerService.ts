@@ -18,15 +18,14 @@ class BookingCrawlerService {
   async importHotels(command: CrawlerCommand): Promise<any> {
     await updateJobStatus(command, "RUNNING")
     const commandMapped = commandMapper(command)
-    const hotelResults = await this.getBookingHotels(commandMapped)
-    await this.onFinish(command, hotelResults)
+    await this.getBookingHotels(command, commandMapped)
+    await this.onFinish(command)
     return {
       finishedCurrentState: true
     }
   }
 
-  private async getBookingHotels(variables: any) {
-    const results = []
+  private async getBookingHotels(command: CrawlerCommand, variables: any) {
     const resultLimit = 1000
     let pagination
     let paginationInput = {
@@ -45,7 +44,9 @@ class BookingCrawlerService {
         })
         .then((res) => res.data.data)
 
-      results.push(response?.searchQueries?.search?.results || [])
+      const results = response?.searchQueries?.search?.results || []
+      const hotelResults = results.flat()
+      this.syncData(command, hotelResults)
       return response.searchQueries.search.pagination
     }
 
@@ -61,11 +62,9 @@ class BookingCrawlerService {
       paginationInput.offset < pagination.nbResultsTotal &&
       paginationInput.offset < resultLimit
     )
-
-    return results.flat()
   }
 
-  private async onFinish(
+  private async syncData(
     command: CrawlerCommand,
     hotelResults: BookingHotelResult[]
   ) {
@@ -77,11 +76,14 @@ class BookingCrawlerService {
         headers: {
           "Content-Type": "application/json"
         }
-      }).then((res) => res.json()),
-      updateJobStatus(command, "FINISHED")
+      }).then((res) => res.json())
     ]).catch((err) => {
       console.error("error on onFinish", err)
     })
+  }
+
+  private async onFinish(command: CrawlerCommand) {
+    updateJobStatus(command, "FINISHED")
   }
 }
 

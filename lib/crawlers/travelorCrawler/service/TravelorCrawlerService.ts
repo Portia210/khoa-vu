@@ -1,4 +1,5 @@
 import { updateJobStatus } from "~lib/framework/utils/updateJobStatus"
+import type { CrawlerCommand } from "~lib/shared/types/CrawlerCommand"
 import { sleep } from "~utils/sleep"
 
 import { TRAVELOR_API, TRAVERLOR_CONFIG } from "../constants"
@@ -9,7 +10,6 @@ import type {
 } from "../types"
 import { commandMapper } from "../utils/commandMapper"
 import { dataMapping } from "../utils/dataMapping"
-import type { CrawlerCommand } from "~lib/shared/types/CrawlerCommand"
 
 class TravelorCrawlerService {
   constructor() {}
@@ -18,14 +18,13 @@ class TravelorCrawlerService {
     await updateJobStatus(command, "RUNNING")
     const commandMapped = commandMapper(command)
     const sessionId = await this.getSession(commandMapped)
-    const data = await this.getTravelorHotels(sessionId)
-    await this.onFinish(command, sessionId, data)
+    await this.getTravelorHotels(command, sessionId)
+    await this.onFinish(command)
     return {
       finishedCurrentState: true
     }
   }
-
-  private async onFinish(
+  private async syncData(
     command: any,
     sessionId: string,
     hotels: TravelorHotelData[]
@@ -38,8 +37,7 @@ class TravelorCrawlerService {
         headers: {
           "Content-Type": "application/json"
         }
-      }).then((res) => res.json()),
-      updateJobStatus(command, "FINISHED")
+      }).then((res) => res.json())
     ]).catch((err) => {
       console.error("error on onFinish", err)
     })
@@ -61,6 +59,7 @@ class TravelorCrawlerService {
   }
 
   private async getTravelorHotels(
+    command: any,
     sessionId: string,
     params?: URLSearchParams
   ): Promise<TravelorHotelData[]> {
@@ -75,6 +74,8 @@ class TravelorCrawlerService {
       })
     }
     const data = await this.getTravelorHotelData(sessionId, params)
+    const hotels = data.hotelsData
+    this.syncData(command, sessionId, hotels)
     const { totalResults, status } = await this.getResponseStatus(data)
     if (status === "running") {
       await sleep(2000)
@@ -86,9 +87,9 @@ class TravelorCrawlerService {
         take: totalResults.toString(),
         locale: "en"
       })
-      return await this.getTravelorHotels(sessionId, params)
+
+      return await this.getTravelorHotels(command, sessionId, params)
     }
-    return data.hotelsData
   }
 
   private async getTravelorHotelData(
@@ -120,6 +121,10 @@ class TravelorCrawlerService {
       totalResults: data?.meta?.all?.total || 100,
       status: data.status || "finished"
     }
+  }
+
+  private async onFinish(command: any) {
+    updateJobStatus(command, "FINISHED")
   }
 }
 
