@@ -35,7 +35,7 @@ class BookingCrawlerService {
     }
 
     const fetchBookingHotels = async (payload: any) => {
-      const url = `${BOOKING_API.GRAPHQL}?selected_currency="USD"`
+      const url = `${BOOKING_API.GRAPHQL}?selected_currency=USD`
       const response: BookingHotelResponse = await axios
         .post(url, JSON.stringify(payload), {
           withCredentials: true,
