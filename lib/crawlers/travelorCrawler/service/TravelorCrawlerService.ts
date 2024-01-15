@@ -15,11 +15,17 @@ class TravelorCrawlerService {
   constructor() {}
 
   async importHotels(command: CrawlerCommand) {
-    await updateJobStatus(command, "RUNNING")
-    const commandMapped = commandMapper(command)
-    const sessionId = await this.getSession(commandMapped)
-    await this.getTravelorHotels(command, sessionId)
-    await this.onFinish(command)
+    try {
+      await updateJobStatus(command, "RUNNING")
+      const commandMapped = commandMapper(command)
+      const sessionId = await this.getSession(commandMapped)
+      await this.getTravelorHotels(command, sessionId)
+      await this.onFinish(command)
+    } catch (error) {
+      console.error("error on importHotels", error)
+      await updateJobStatus(command, "FAILED")
+    }
+
     return {
       finishedCurrentState: true
     }

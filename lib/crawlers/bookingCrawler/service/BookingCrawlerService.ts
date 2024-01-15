@@ -16,10 +16,15 @@ class BookingCrawlerService {
   constructor() {}
 
   async importHotels(command: CrawlerCommand): Promise<any> {
-    await updateJobStatus(command, "RUNNING")
-    const commandMapped = commandMapper(command)
-    await this.getBookingHotels(command, commandMapped)
-    await this.onFinish(command)
+    try {
+      await updateJobStatus(command, "RUNNING")
+      const commandMapped = commandMapper(command)
+      await this.getBookingHotels(command, commandMapped)
+      await this.onFinish(command)
+    } catch (error) {
+      console.error("error on importHotels", error)
+      await updateJobStatus(command, "FAILED")
+    }
     return {
       finishedCurrentState: true
     }
@@ -27,7 +32,7 @@ class BookingCrawlerService {
 
   private async getBookingHotels(command: CrawlerCommand, variables: any) {
     const resultLimit = 1000
-    let pagination
+    let pagination = null;
     let paginationInput = {
       offset: 0,
       rowsPerPage: 100
@@ -47,7 +52,8 @@ class BookingCrawlerService {
       const results = response?.searchQueries?.search?.results || []
       const hotelResults = results.flat()
       this.syncData(command, hotelResults)
-      return response.searchQueries.search.pagination
+      pagination = response.searchQueries.search.pagination
+      return pagination
     }
 
     do {

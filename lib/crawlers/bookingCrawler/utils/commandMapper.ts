@@ -13,7 +13,9 @@ export const commandMapper = (command: CrawlerCommand) => {
   variableInput.location = {
     searchString: command?.destination?.destination,
     destType: command?.destination?.dest_type?.toLocaleUpperCase(),
-    destId: parseInt(command?.destination?.placeId)
+    destId: parseInt(command?.destination?.placeId),
+    latitude: command?.destination?.lat,
+    longitude: command?.destination?.lng,
   }
   variableInput.nbRooms = command.rooms
   variableInput.nbAdults = command.adult

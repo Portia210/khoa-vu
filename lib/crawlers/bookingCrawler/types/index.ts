@@ -40,7 +40,9 @@ export interface Filters {}
 export interface Location {
   searchString: string
   destType: string
-  destId: number
+  destId: number,
+  latitude?: number,
+  longitude?: number,
 }
 
 export interface MetaContext {
