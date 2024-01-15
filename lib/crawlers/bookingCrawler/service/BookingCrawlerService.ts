@@ -27,7 +27,7 @@ class BookingCrawlerService {
 
   private async getBookingHotels(variables: any) {
     const results = []
-    const resultLimit = 1000;
+    const resultLimit = 1000
     let pagination
     let paginationInput = {
       offset: 0,
@@ -35,8 +35,9 @@ class BookingCrawlerService {
     }
 
     const fetchBookingHotels = async (payload: any) => {
+      const url = `${BOOKING_API.GRAPHQL}?selected_currency="USD"`
       const response: BookingHotelResponse = await axios
-        .post(BOOKING_API.GRAPHQL, JSON.stringify(payload), {
+        .post(url, JSON.stringify(payload), {
           withCredentials: true,
           headers: {
             "Content-Type": "application/json"
@@ -56,7 +57,10 @@ class BookingCrawlerService {
       }
       pagination = await fetchBookingHotels(payload)
       paginationInput.offset += paginationInput.rowsPerPage
-    } while (paginationInput.offset < pagination.nbResultsTotal && paginationInput.offset < resultLimit)
+    } while (
+      paginationInput.offset < pagination.nbResultsTotal &&
+      paginationInput.offset < resultLimit
+    )
 
     return results.flat()
   }
