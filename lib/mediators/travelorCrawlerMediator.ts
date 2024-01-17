@@ -18,8 +18,6 @@ class TravelorCrawlerMediator extends ImportMediator {
     })
     const isAuth = await this.checkAuthentication()
     if (!isAuth) return
-    const currentState = await this.getImporterStates()
-    if (currentState?.dataState === "fetching") return
     this.postMessage({
       type: PUBSUB_MESSAGES.IMPORT,
       dataSource: DATA_SOURCES.TRAVELOR,

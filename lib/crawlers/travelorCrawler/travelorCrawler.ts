@@ -33,8 +33,7 @@ class TravelorCrawler extends DataImporter {
         context: {
           dataSource: DATA_SOURCES.TRAVELOR,
           hasData: false,
-          finishedCurrentState: false,
-          targetState: ""
+          targetState: "",
         } as DataImporterContext,
         states: {
           ...commonImportFlowStates,

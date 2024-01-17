@@ -2,20 +2,21 @@ import { DATA_SOURCES } from "~lib/constants/dataSources"
 import { BASE_URL } from "~lib/constants/enviroment"
 import { bookingCrawlerMediator } from "~lib/mediators/bookingCrawlerMediator"
 import { travelorCrawlerMediator } from "~lib/mediators/travelorCrawlerMediator"
-
-import type { CrawlerJobDto } from "./types/CrawlerJobDto"
+import type { CrawlerCommand } from "~lib/shared/types/CrawlerCommand"
 
 export class CronJobs {
   static async fetchJobs() {
     return setInterval(async () => {
-      const jobs: CrawlerJobDto[] = await fetch(`${BASE_URL}/api/jobs`).then(
+      const jobs: CrawlerCommand[] = await fetch(`${BASE_URL}/api/jobs`).then(
         (res) => res.json()
       )
-      CronJobs.handleCronJobResult(jobs.shift())
+      for (const job of jobs) {
+        CronJobs.handleCronJobResult(job)
+      }
     }, 3000)
   }
 
-  private static async handleCronJobResult(job: CrawlerJobDto) {
+  private static async handleCronJobResult(job: CrawlerCommand) {
     if (!job) return
     if (job?.dataSource?.toLocaleLowerCase() === DATA_SOURCES.TRAVELOR) {
       console.log("Starting travelor crawler")

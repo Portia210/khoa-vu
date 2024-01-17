@@ -33,8 +33,7 @@ class BookingCrawler extends DataImporter {
         context: {
           dataSource: DATA_SOURCES.BOOKING,
           hasData: false,
-          finishedCurrentState: false,
-          targetState: ""
+          targetState: "",
         } as DataImporterContext,
         states: {
           ...commonImportFlowStates,

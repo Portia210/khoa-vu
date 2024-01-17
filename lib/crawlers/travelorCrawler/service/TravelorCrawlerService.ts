@@ -11,7 +11,7 @@ import type {
 import { commandMapper } from "../utils/commandMapper"
 import { dataMapping } from "../utils/dataMapping"
 
-class TravelorCrawlerService {
+export class TravelorCrawlerService {
   constructor() {}
 
   async importHotels(command: CrawlerCommand) {
@@ -24,10 +24,6 @@ class TravelorCrawlerService {
     } catch (error) {
       console.error("error on importHotels", error)
       await updateJobStatus(command, "FAILED")
-    }
-
-    return {
-      finishedCurrentState: true
     }
   }
   private async syncData(
@@ -133,6 +129,3 @@ class TravelorCrawlerService {
     updateJobStatus(command, "FINISHED")
   }
 }
-
-const travelorCrawlerService = new TravelorCrawlerService()
-export { travelorCrawlerService }

@@ -12,7 +12,7 @@ import type {
 import { commandMapper } from "../utils/commandMapper"
 import { dataMapping } from "../utils/dataMapping"
 
-class BookingCrawlerService {
+export class BookingCrawlerService {
   constructor() {}
 
   async importHotels(command: CrawlerCommand): Promise<any> {
@@ -25,14 +25,11 @@ class BookingCrawlerService {
       console.error("error on importHotels", error)
       await updateJobStatus(command, "FAILED")
     }
-    return {
-      finishedCurrentState: true
-    }
   }
 
   private async getBookingHotels(command: CrawlerCommand, variables: any) {
     const resultLimit = 1000
-    let pagination = null;
+    let pagination = null
     let paginationInput = {
       offset: 0,
       rowsPerPage: 100
@@ -92,6 +89,3 @@ class BookingCrawlerService {
     updateJobStatus(command, "FINISHED")
   }
 }
-
-const bookingCrawlerService = new BookingCrawlerService()
-export { bookingCrawlerService }
