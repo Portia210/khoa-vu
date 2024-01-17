@@ -63,7 +63,8 @@ export class TravelorCrawlerService {
   private async getTravelorHotels(
     command: any,
     sessionId: string,
-    params?: URLSearchParams
+    params?: URLSearchParams,
+    stop = false
   ): Promise<TravelorHotelData[]> {
     if (!params) {
       params = new URLSearchParams({
@@ -79,18 +80,20 @@ export class TravelorCrawlerService {
     const hotels = data.hotelsData
     this.syncData(command, sessionId, hotels)
     const { totalResults, status } = await this.getResponseStatus(data)
+    params = new URLSearchParams({
+      sort_by: "distance",
+      sort: "asc",
+      currency: "USD",
+      skip: "0",
+      take: totalResults.toString(),
+      locale: "en"
+    })
+    if (stop) return
     if (status === "running") {
       await sleep(2000)
-      const params = new URLSearchParams({
-        sort_by: "distance",
-        sort: "asc",
-        currency: "USD",
-        skip: "0",
-        take: totalResults.toString(),
-        locale: "en"
-      })
-
-      return await this.getTravelorHotels(command, sessionId, params)
+      return await this.getTravelorHotels(command, data.session, params)
+    } else {
+      return await this.getTravelorHotels(command, data.session, params, true)
     }
   }
 

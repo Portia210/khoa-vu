@@ -19,7 +19,7 @@ export const dataMapping = (
       title: hotelResult?.displayName?.text,
       picture_link: getHotelPhoto(hotelResult?.basicPropertyData?.photos),
       booking_link: getBookingLink(command, hotelResult?.basicPropertyData),
-      price: hotelResult?.priceDisplayInfoIrene?.displayPrice?.amountPerStay,
+      price:  hotelResult.blocks[0]?.finalPrice,
       rate: hotelResult?.basicPropertyData?.reviewScore?.score,
       reviews: hotelResult?.basicPropertyData?.reviewScore,
       stars: hotelResult?.basicPropertyData?.starRating?.value,
