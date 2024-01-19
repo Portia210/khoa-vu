@@ -16,7 +16,8 @@ export class TravelorCrawlerService {
 
   async importHotels(command: CrawlerCommand) {
     try {
-      await updateJobStatus(command, "RUNNING")
+      const canContinue = await updateJobStatus(command, "RUNNING")
+      if (!canContinue) return
       const commandMapped = commandMapper(command)
       const sessionId = await this.getSession(commandMapped)
       await this.getTravelorHotels(command, sessionId)
