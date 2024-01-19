@@ -1,3 +1,4 @@
+import { DATA_SOURCES } from "~lib/constants/dataSources"
 import type { DataImporterContext } from "~lib/framework/dataImporter/context"
 import {
   AuthState,
@@ -5,6 +6,7 @@ import {
   DataState,
   ImportState
 } from "~lib/framework/dataStores/types/dataImporterState"
+import { CrawlerCommandService } from "~service/CrawlerCommandService"
 
 import { TRAVELOR_CRAWLER_FLOW_STATES } from "../constants"
 import { TravelorCrawlerService } from "../service/TravelorCrawlerService"
@@ -14,11 +16,13 @@ export const importState = {
     invoke: {
       id: `${TRAVELOR_CRAWLER_FLOW_STATES.IMPORT}`,
       src: async (context: DataImporterContext, event: any) => {
-        console.log("travelor importState.....context ", context)
-        console.log("travelor importState.....event ", event)
-        // if (!event.data) throw Error("No command provided")
-        // const travelorCrawlerService = new TravelorCrawlerService()
-        // await travelorCrawlerService.importHotels(event.data)
+        const commands = await CrawlerCommandService.fetchJobs(
+          DATA_SOURCES.TRAVELOR
+        )
+        for (const command of commands) {
+          const travelorCrawlerService = new TravelorCrawlerService()
+          travelorCrawlerService.importHotels(command)
+        }
       },
       onDone: {
         target: `${TRAVELOR_CRAWLER_FLOW_STATES.IMPORT_COMPLETED}`

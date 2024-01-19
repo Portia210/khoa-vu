@@ -8,16 +8,16 @@ import { PUBSUB_MESSAGES } from "~lib/framework/pubSubController/types/messages"
 
 import { directImporters } from "./directImporters"
 
-const ImporterWorker = new Worker(
-  new URL("../mediators/serviceWorker/worker.ts", import.meta.url),
-  { type: "module" }
-)
+// const ImporterWorker = new Worker(
+//   new URL("../mediators/serviceWorker/worker?worker&inline", import.meta.url),
+//   { type: "module" }
+// )
 
 export class ImportMediator extends PubSubController {
   private dataSource!: DataSourceType
   private type!: ImportMediatorType
   private scheduleImportConfig!: ScheduleImportConfig
-  static importWorker = ImporterWorker
+  // static importWorker = ImporterWorker
 
   constructor(
     dataSource: DataSourceType,
@@ -35,10 +35,10 @@ export class ImportMediator extends PubSubController {
       this.setScheduleImport(defaultScheduleImportConfig)
 
     if (type === ImportMediatorType.ServiceWorker) {
-      ImportMediator.importWorker.postMessage({
-        type: PUBSUB_MESSAGES.INITIALIZE,
-        dataSource
-      })
+      // ImportMediator.importWorker.postMessage({
+      //   type: PUBSUB_MESSAGES.INITIALIZE,
+      //   dataSource
+      // })
     } else {
       directImporters[dataSource].initialize().then(() => {
         console.log(
@@ -57,7 +57,7 @@ export class ImportMediator extends PubSubController {
 
   postMessage(message: WorkerMessage) {
     if (this.type === ImportMediatorType.ServiceWorker) {
-      ImportMediator.importWorker.postMessage(message)
+      // ImportMediator.importWorker.postMessage(message)
       return
     }
 

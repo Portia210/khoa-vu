@@ -8,8 +8,8 @@ import { ImportMediator } from "~lib/shared/importMediator"
 
 class TravelorCrawlerMediator extends ImportMediator {
   constructor() {
-    super(DATA_SOURCES.TRAVELOR, ImportMediatorType.ServiceWorker, {
-      scheduleInterval: 10,
+    super(DATA_SOURCES.TRAVELOR, ImportMediatorType.Direct, {
+      scheduleInterval: 5,
       scheduleUnit: "second"
     })
   }
