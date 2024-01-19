@@ -23,7 +23,7 @@ export class TravelorCrawlerService {
       await this.onFinish(command)
     } catch (error) {
       console.error("error on importHotels", error)
-      await updateJobStatus(command, "FAILED")
+      await updateJobStatus(command, "FAILED", error)
     }
   }
   private async syncData(

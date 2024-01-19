@@ -15,13 +15,14 @@ export class BookingCrawlerService {
 
   async importHotels(command: CrawlerCommand): Promise<any> {
     try {
-      await updateJobStatus(command, "RUNNING")
+      const canContinue = await updateJobStatus(command, "RUNNING")
+      if (!canContinue) return
       const commandMapped = commandMapper(command)
       await this.getBookingHotels(command, commandMapped)
       await this.onFinish(command)
     } catch (error) {
       console.error("error on importHotels", error)
-      await updateJobStatus(command, "FAILED")
+      await updateJobStatus(command, "FAILED", error)
     }
   }
 
