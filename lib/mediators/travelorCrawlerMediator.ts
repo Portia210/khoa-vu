@@ -8,7 +8,10 @@ import { ImportMediator } from "~lib/shared/importMediator"
 
 class TravelorCrawlerMediator extends ImportMediator {
   constructor() {
-    super(DATA_SOURCES.TRAVELOR, ImportMediatorType.Direct)
+    super(DATA_SOURCES.TRAVELOR, ImportMediatorType.ServiceWorker, {
+      scheduleInterval: 10,
+      scheduleUnit: "second"
+    })
   }
 
   async startAuthentication(command?: any): Promise<void> {

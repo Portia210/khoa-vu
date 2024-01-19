@@ -8,7 +8,7 @@ import { ImportMediator } from "~lib/shared/importMediator"
 
 class BookingCrawlerMediator extends ImportMediator {
   constructor() {
-    super(DATA_SOURCES.BOOKING, ImportMediatorType.Direct)
+    super(DATA_SOURCES.BOOKING, ImportMediatorType.ServiceWorker)
   }
 
   async startAuthentication(command?: any): Promise<void> {

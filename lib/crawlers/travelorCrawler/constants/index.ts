@@ -14,6 +14,7 @@ export const TRAVERLOR_CONFIG = {
 }
 export enum TRAVELOR_SPECIFIC_STATES {
   CLEAN_UP = "CLEAN_UP",
+  IMPORT_NEW_DATA = 'importNewData',
 }
 
 export const TRAVELOR_CRAWLER_FLOW_STATES = {
