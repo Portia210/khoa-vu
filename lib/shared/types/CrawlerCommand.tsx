@@ -18,6 +18,7 @@ export const CrawlerCommandZSchema = z.object({
   childrenAges: z.array(z.number()).optional(),
   guests: z.string().optional(),
   status: z.string().optional().default("PENDING"),
+  message: z.any().optional(),
   assignedTo: z.string().optional()
 })
 

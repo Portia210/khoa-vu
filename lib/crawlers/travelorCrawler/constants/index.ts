@@ -12,9 +12,7 @@ export const TRAVELOR_API = {
 export const TRAVERLOR_CONFIG = {
   BEARER_TOKEN: "Bearer Nv2uH1uSSo2XCZratnQcBoUIrPkwrrMEQsCc4zz6"
 }
-export enum TRAVELOR_SPECIFIC_STATES {
-  CLEAN_UP = "CLEAN_UP",
-}
+export enum TRAVELOR_SPECIFIC_STATES {}
 
 export const TRAVELOR_CRAWLER_FLOW_STATES = {
   ...TRAVELOR_SPECIFIC_STATES,

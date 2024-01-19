@@ -11,9 +11,7 @@ export const BOOKING_API = {
 
 export const BOOKING_CONFIG = {}
 
-export enum BOOKING_SPECIFIC_STATES {
-  CLEAN_UP = "CLEAN_UP"
-}
+export enum BOOKING_SPECIFIC_STATES {}
 
 export const BOOKING_CRAWLER_FLOW_STATES = {
   ...BOOKING_SPECIFIC_STATES,

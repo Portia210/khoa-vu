@@ -8,7 +8,10 @@ import { ImportMediator } from "~lib/shared/importMediator"
 
 class BookingCrawlerMediator extends ImportMediator {
   constructor() {
-    super(DATA_SOURCES.BOOKING, ImportMediatorType.Direct)
+    super(DATA_SOURCES.BOOKING, ImportMediatorType.Direct, {
+      scheduleInterval: 5,
+      scheduleUnit: "second"
+    })
   }
 
   async startAuthentication(command?: any): Promise<void> {
@@ -16,10 +19,8 @@ class BookingCrawlerMediator extends ImportMediator {
       type: PUBSUB_MESSAGES.START_AUTHENTICATION,
       dataSource: DATA_SOURCES.BOOKING
     })
-    const isAuth = await this.checkAuthentication()
-    if (!isAuth) return
-    const currentState = await this.getImporterStates()
-    if (currentState?.dataState === "fetching") return
+    // const isAuth = await this.checkAuthentication()
+    // if (!isAuth) return
     this.postMessage({
       type: PUBSUB_MESSAGES.IMPORT,
       dataSource: DATA_SOURCES.BOOKING,

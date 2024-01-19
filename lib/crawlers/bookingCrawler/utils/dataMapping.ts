@@ -14,17 +14,23 @@ export const dataMapping = (
   hotelResults: BookingHotelResult[]
 ) => {
   return hotelResults?.map((hotelResult) => {
+    const sumPrice = hotelResult?.blocks?.reduce(
+      (a, b) => a + b.finalPrice.amount,
+      0
+    )
     return {
       hotel_id: hotelResult?.basicPropertyData?.id,
       title: hotelResult?.displayName?.text,
       picture_link: getHotelPhoto(hotelResult?.basicPropertyData?.photos),
       booking_link: getBookingLink(command, hotelResult?.basicPropertyData),
-      price: hotelResult?.priceDisplayInfoIrene?.displayPrice?.amountPerStay,
+      price: {
+        amount: sumPrice
+      },
       rate: hotelResult?.basicPropertyData?.reviewScore?.score,
       reviews: hotelResult?.basicPropertyData?.reviewScore,
       stars: hotelResult?.basicPropertyData?.starRating?.value,
       distance: hotelResult?.location?.mainDistance,
-      jobId: command?._id,
+      jobId: command?._id
     }
   })
 }
@@ -33,7 +39,7 @@ const getBookingLink = (
   command: CrawlerCommand,
   basicPropertyData: BookingBasicPropertyData
 ): string => {
-  const baseUrl = `https://www.booking.com/hotel/${basicPropertyData.location.countryCode}/${basicPropertyData.pageName}`
+  const baseUrl = `https://www.booking.com/hotel/${basicPropertyData.location.countryCode}/${basicPropertyData.pageName}.en-gb.html`
 
   const url = new URLSearchParams({
     checkin: dayjs(command?.checkInDate).format("YYYY-MM-DD"),

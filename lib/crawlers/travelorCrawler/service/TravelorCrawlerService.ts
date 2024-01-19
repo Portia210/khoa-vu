@@ -11,23 +11,20 @@ import type {
 import { commandMapper } from "../utils/commandMapper"
 import { dataMapping } from "../utils/dataMapping"
 
-class TravelorCrawlerService {
+export class TravelorCrawlerService {
   constructor() {}
 
   async importHotels(command: CrawlerCommand) {
     try {
-      await updateJobStatus(command, "RUNNING")
+      const canContinue = await updateJobStatus(command, "RUNNING")
+      if (!canContinue) return
       const commandMapped = commandMapper(command)
       const sessionId = await this.getSession(commandMapped)
       await this.getTravelorHotels(command, sessionId)
       await this.onFinish(command)
     } catch (error) {
       console.error("error on importHotels", error)
-      await updateJobStatus(command, "FAILED")
-    }
-
-    return {
-      finishedCurrentState: true
+      await updateJobStatus(command, "FAILED", error)
     }
   }
   private async syncData(
@@ -67,7 +64,8 @@ class TravelorCrawlerService {
   private async getTravelorHotels(
     command: any,
     sessionId: string,
-    params?: URLSearchParams
+    params?: URLSearchParams,
+    stop = false
   ): Promise<TravelorHotelData[]> {
     if (!params) {
       params = new URLSearchParams({
@@ -83,18 +81,20 @@ class TravelorCrawlerService {
     const hotels = data.hotelsData
     this.syncData(command, sessionId, hotels)
     const { totalResults, status } = await this.getResponseStatus(data)
+    params = new URLSearchParams({
+      sort_by: "distance",
+      sort: "asc",
+      currency: "USD",
+      skip: "0",
+      take: totalResults.toString(),
+      locale: "en"
+    })
+    if (stop) return
     if (status === "running") {
       await sleep(2000)
-      const params = new URLSearchParams({
-        sort_by: "distance",
-        sort: "asc",
-        currency: "USD",
-        skip: "0",
-        take: totalResults.toString(),
-        locale: "en"
-      })
-
-      return await this.getTravelorHotels(command, sessionId, params)
+      return await this.getTravelorHotels(command, data.session, params)
+    } else {
+      return await this.getTravelorHotels(command, data.session, params, true)
     }
   }
 
@@ -133,6 +133,3 @@ class TravelorCrawlerService {
     updateJobStatus(command, "FINISHED")
   }
 }
-
-const travelorCrawlerService = new TravelorCrawlerService()
-export { travelorCrawlerService }

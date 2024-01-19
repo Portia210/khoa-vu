@@ -29,17 +29,15 @@ class TravelorCrawler extends DataImporter {
       {
         id: "travelor-crawler",
         version: "1",
-        initial: TRAVELOR_CRAWLER_FLOW_STATES.DISABLED,
+        initial: TRAVELOR_CRAWLER_FLOW_STATES.IMPORT_COMPLETED,
         context: {
           dataSource: DATA_SOURCES.TRAVELOR,
           hasData: false,
-          finishedCurrentState: false,
-          targetState: ""
+          targetState: "",
         } as DataImporterContext,
         states: {
           ...commonImportFlowStates,
           ...states.importState,
-          ...states.cleanUpState,
           ...states.switchState
         },
         ...commonImporterEvents

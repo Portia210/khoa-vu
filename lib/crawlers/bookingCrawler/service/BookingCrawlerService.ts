@@ -1,5 +1,3 @@
-import axios from "axios"
-
 import { updateJobStatus } from "~lib/framework/utils/updateJobStatus"
 import type { CrawlerCommand } from "~lib/shared/types/CrawlerCommand"
 
@@ -12,27 +10,25 @@ import type {
 import { commandMapper } from "../utils/commandMapper"
 import { dataMapping } from "../utils/dataMapping"
 
-class BookingCrawlerService {
+export class BookingCrawlerService {
   constructor() {}
 
   async importHotels(command: CrawlerCommand): Promise<any> {
     try {
-      await updateJobStatus(command, "RUNNING")
+      const canContinue = await updateJobStatus(command, "RUNNING")
+      if (!canContinue) return
       const commandMapped = commandMapper(command)
       await this.getBookingHotels(command, commandMapped)
       await this.onFinish(command)
     } catch (error) {
       console.error("error on importHotels", error)
-      await updateJobStatus(command, "FAILED")
-    }
-    return {
-      finishedCurrentState: true
+      await updateJobStatus(command, "FAILED", error)
     }
   }
 
   private async getBookingHotels(command: CrawlerCommand, variables: any) {
     const resultLimit = 1000
-    let pagination = null;
+    let pagination = null
     let paginationInput = {
       offset: 0,
       rowsPerPage: 100
@@ -40,15 +36,15 @@ class BookingCrawlerService {
 
     const fetchBookingHotels = async (payload: any) => {
       const url = `${BOOKING_API.GRAPHQL}?selected_currency=USD`
-      const response: BookingHotelResponse = await axios
-        .post(url, JSON.stringify(payload), {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json"
-          }
-        })
-        .then((res) => res.data.data)
-
+      const response: BookingHotelResponse = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then(async (res) => {
+        return await res.json().then((res) => res.data)
+      })
       const results = response?.searchQueries?.search?.results || []
       const hotelResults = results.flat()
       this.syncData(command, hotelResults)
@@ -92,6 +88,3 @@ class BookingCrawlerService {
     updateJobStatus(command, "FINISHED")
   }
 }
-
-const bookingCrawlerService = new BookingCrawlerService()
-export { bookingCrawlerService }

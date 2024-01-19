@@ -18,13 +18,7 @@ export const switchState = {
         target: `${BOOKING_CRAWLER_FLOW_STATES.IMPORT}`,
         cond: (context: any, _: any) =>
           context.targetState === BOOKING_CRAWLER_FLOW_STATES.IMPORT
-      },
-      {
-        target: `${BOOKING_CRAWLER_FLOW_STATES.CLEAN_UP}`,
-        cond: (context: any, _: any) =>
-          context.targetState === BOOKING_CRAWLER_FLOW_STATES.IMPORT_COMPLETED
       }
-
       /* TODO: Add any specific states here */
     ]
   }

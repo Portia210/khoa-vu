@@ -6,13 +6,15 @@ import type {
 
 const updateJobStatus = async (
   job: CrawlerCommand,
-  status: CrawlerStatus = "RUNNING"
-) => {
+  status: CrawlerStatus = "RUNNING",
+  message?: string
+): Promise<boolean> => {
   try {
     if (!job._id) throw new Error("Job id is required")
     const payload = {
       ...job,
-      status
+      status,
+      message
     }
     const response = await fetch(`${BASE_URL}/api/jobs/${job._id}`, {
       method: "PUT",

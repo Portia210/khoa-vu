@@ -29,17 +29,15 @@ class BookingCrawler extends DataImporter {
       {
         id: "booking-crawler",
         version: "1",
-        initial: BOOKING_CRAWLER_FLOW_STATES.DISABLED,
+        initial: BOOKING_CRAWLER_FLOW_STATES.IMPORT_COMPLETED,
         context: {
           dataSource: DATA_SOURCES.BOOKING,
           hasData: false,
-          finishedCurrentState: false,
-          targetState: ""
+          targetState: "",
         } as DataImporterContext,
         states: {
           ...commonImportFlowStates,
           ...states.importState,
-          ...states.cleanUpState,
           ...states.switchState
         },
         ...commonImporterEvents

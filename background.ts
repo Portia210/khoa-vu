@@ -1,3 +1,6 @@
+import { bookingCrawlerMediator } from "~lib/mediators/bookingCrawlerMediator"
+import { travelorCrawlerMediator } from "~lib/mediators/travelorCrawlerMediator"
+
 const onExtInstall = () => {
   chrome.tabs.create({
     active: true,
@@ -14,9 +17,17 @@ const onExtIconClick = () => {
   })
 }
 
+const cronJobs = () => {
+  setInterval(() => {
+    travelorCrawlerMediator.startAuthentication()
+    bookingCrawlerMediator.startAuthentication()
+  }, 3000)
+}
+
 async function boot() {
-  onExtInstall()
+  // onExtInstall()
   onExtIconClick()
+  cronJobs()
 }
 
 boot().catch((e) => {
