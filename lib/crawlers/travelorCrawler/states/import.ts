@@ -16,12 +16,12 @@ export const importState = {
       src: async (context: DataImporterContext, event: any) => {
         console.log("travelor importState.....context ", context)
         console.log("travelor importState.....event ", event)
-        if (!event.data) throw Error("No command provided")
-        const travelorCrawlerService = new TravelorCrawlerService()
-        await travelorCrawlerService.importHotels(event.data)
+        // if (!event.data) throw Error("No command provided")
+        // const travelorCrawlerService = new TravelorCrawlerService()
+        // await travelorCrawlerService.importHotels(event.data)
       },
       onDone: {
-        target: `${TRAVELOR_CRAWLER_FLOW_STATES.CLEAN_UP}`
+        target: `${TRAVELOR_CRAWLER_FLOW_STATES.IMPORT_COMPLETED}`
       },
       onError: {
         target: `${TRAVELOR_CRAWLER_FLOW_STATES.IMPORT_ERROR}`,

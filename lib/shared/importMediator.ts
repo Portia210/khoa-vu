@@ -88,7 +88,7 @@ export class ImportMediator extends PubSubController {
       importState = {
         dataSourceName: this.dataSource,
         currentState: "",
-        importState: ImportState.DISABLED,
+        importState: ImportState.ENABLED,
         lastUpdated: new Date(),
         schedule: scheduleImportConfig
       }

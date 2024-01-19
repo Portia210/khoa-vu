@@ -6,14 +6,14 @@ import type { CrawlerCommand } from "~lib/shared/types/CrawlerCommand"
 
 export class CronJobs {
   static async fetchJobs() {
-    return setInterval(async () => {
-      const jobs: CrawlerCommand[] = await fetch(`${BASE_URL}/api/jobs`).then(
-        (res) => res.json()
-      )
-      for (const job of jobs) {
-        CronJobs.handleCronJobResult(job)
-      }
-    }, 3000)
+    // return setInterval(async () => {
+    //   const jobs: CrawlerCommand[] = await fetch(`${BASE_URL}/api/jobs`).then(
+    //     (res) => res.json()
+    //   )
+    //   for (const job of jobs) {
+    //     CronJobs.handleCronJobResult(job)
+    //   }
+    // }, 3000)
   }
 
   private static async handleCronJobResult(job: CrawlerCommand) {
