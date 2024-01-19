@@ -1,5 +1,3 @@
-import axios from "axios"
-
 import { updateJobStatus } from "~lib/framework/utils/updateJobStatus"
 import type { CrawlerCommand } from "~lib/shared/types/CrawlerCommand"
 
@@ -37,15 +35,15 @@ export class BookingCrawlerService {
 
     const fetchBookingHotels = async (payload: any) => {
       const url = `${BOOKING_API.GRAPHQL}?selected_currency=USD`
-      const response: BookingHotelResponse = await axios
-        .post(url, JSON.stringify(payload), {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json"
-          }
-        })
-        .then((res) => res.data.data)
-
+      const response: BookingHotelResponse = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then(async (res) => {
+        return await res.json().then((res) => res.data)
+      })
       const results = response?.searchQueries?.search?.results || []
       const hotelResults = results.flat()
       this.syncData(command, hotelResults)

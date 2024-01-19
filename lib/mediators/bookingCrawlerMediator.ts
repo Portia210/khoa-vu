@@ -19,8 +19,8 @@ class BookingCrawlerMediator extends ImportMediator {
       type: PUBSUB_MESSAGES.START_AUTHENTICATION,
       dataSource: DATA_SOURCES.BOOKING
     })
-    const isAuth = await this.checkAuthentication()
-    if (!isAuth) return
+    // const isAuth = await this.checkAuthentication()
+    // if (!isAuth) return
     this.postMessage({
       type: PUBSUB_MESSAGES.IMPORT,
       dataSource: DATA_SOURCES.BOOKING,

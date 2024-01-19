@@ -39,7 +39,7 @@ const getBookingLink = (
   command: CrawlerCommand,
   basicPropertyData: BookingBasicPropertyData
 ): string => {
-  const baseUrl = `https://www.booking.com/hotel/${basicPropertyData.location.countryCode}/${basicPropertyData.pageName}`
+  const baseUrl = `https://www.booking.com/hotel/${basicPropertyData.location.countryCode}/${basicPropertyData.pageName}.en-gb.html`
 
   const url = new URLSearchParams({
     checkin: dayjs(command?.checkInDate).format("YYYY-MM-DD"),
