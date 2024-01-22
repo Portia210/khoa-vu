@@ -24,7 +24,7 @@ export class BookingService {
       await this.onFinish(command);
     } catch (error) {
       console.error('error on importHotels', error);
-      await updateJobStatus(command, 'FAILED', error);
+      await updateJobStatus(command, 'FAILED', JSON.stringify(error));
     }
   }
 
