@@ -1,13 +1,1 @@
-export type WorkerMessage = {
-  type: string
-  dataSource: string
-  tabId?: number,
-  data?: any,
-  requestToken?: string
-  access_token?: string
-}
-
-export enum ImportMediatorType {
-  Direct = "direct",
-  ServiceWorker = "serviceWorker"
-}
+export const userAgent = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36`;

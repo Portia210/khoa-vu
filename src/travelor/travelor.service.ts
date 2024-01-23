@@ -12,6 +12,7 @@ import { commandMapper } from './utils/commandMapper';
 import { dataMapping } from './utils/dataMapping';
 import fetch from 'node-fetch';
 import { proxyAgent } from 'src/shared/utils/fetchProxy';
+import { userAgent } from 'src/shared/constants';
 
 @Injectable()
 export class TravelorService {
@@ -110,6 +111,7 @@ export class TravelorService {
       headers: {
         'Content-Type': 'application/json',
         accept: 'application/json, text/plain, */*',
+        "user-agent": userAgent,
         authorization: TRAVERLOR_CONFIG.BEARER_TOKEN,
       },
     }).then((res) => res.json());
