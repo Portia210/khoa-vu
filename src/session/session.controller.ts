@@ -1,15 +1,21 @@
 import { Body, Controller, Post } from "@nestjs/common";
+import { BookingService } from "src/booking/booking.service";
 import {
   SessionInputDto,
   SessionInputZSchema,
 } from "src/shared/types/SessionInput.dto";
+import { TravelorService } from "src/travelor/travelor.service";
 import { SessionService } from "./session.service";
 
 @Controller("session")
 export class SessionController {
-  constructor(private readonly sessionService: SessionService) {}
+  constructor(
+    private readonly sessionService: SessionService,
+    private readonly bookingService: BookingService,
+    private readonly travelorService: TravelorService
+  ) {}
 
-  @Post("")
+  @Post()
   async createSession(@Body() payload: SessionInputDto) {
     const sessionInput = SessionInputZSchema.parse(payload);
     let id = await this.sessionService.checkIfSessionExist(sessionInput);
@@ -17,10 +23,15 @@ export class SessionController {
       console.log("Creating new session");
       const { _id, bookingCommand, travelorCommand } =
         await this.sessionService.createSession(sessionInput);
-      // execute(bookingCommand, travelorCommand);
-      // id = _id;
+
+      await Promise.all([
+        this.bookingService.importHotels(bookingCommand),
+        this.travelorService.importHotels(travelorCommand),
+      ]);
+      id = _id;
     } else {
       console.log("Session existed returning...", id);
     }
+    return id;
   }
 }

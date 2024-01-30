@@ -8,6 +8,6 @@ import { BookingCrawlerService } from "./booking.crawler.service";
   imports: [ProxyModule],
   controllers: [BookingController],
   providers: [BookingService, BookingCrawlerService],
-  exports: [BookingCrawlerService],
+  exports: [BookingCrawlerService, BookingService],
 })
 export class BookingModule {}

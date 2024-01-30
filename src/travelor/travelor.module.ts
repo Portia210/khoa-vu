@@ -8,6 +8,6 @@ import { TravelorCrawlerService } from "./travelor.crawler.service";
   imports: [ProxyModule],
   controllers: [TravelorController],
   providers: [TravelorService, TravelorCrawlerService],
-  exports: [TravelorCrawlerService],
+  exports: [TravelorCrawlerService, TravelorService],
 })
 export class TravelorModule {}
