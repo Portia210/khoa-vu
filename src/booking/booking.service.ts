@@ -44,7 +44,7 @@ export class BookingService {
       const response: BookingHotelResponse = await fetch(url, {
         method: "POST",
         body: JSON.stringify(payload),
-        agent: this.proxyService.getProxy("il"),
+        agent: this.proxyService.getProxy(command.countryCode),
         headers: {
           "Content-Type": "application/json",
           "user-agent": userAgent,

@@ -33,7 +33,7 @@ export class TravelorService {
     }
   }
   private async syncData(
-    command: any,
+    command: CrawlerCommand,
     sessionId: string,
     hotels: TravelorHotelData[]
   ) {
@@ -51,10 +51,10 @@ export class TravelorService {
     });
   }
 
-  private async getSession(command: any) {
+  private async getSession(command: CrawlerCommand) {
     const response: any = await fetch(TRAVELOR_API.GET_SESSION, {
       method: "POST",
-      agent: this.proxyService.getProxy("il"),
+      agent: this.proxyService.getProxy(command.countryCode),
       headers: {
         "Content-Type": "application/json",
         accept: "application/json, text/plain, */*",
@@ -66,7 +66,7 @@ export class TravelorService {
   }
 
   private async getTravelorHotels(
-    command: any,
+    command: CrawlerCommand,
     sessionId: string,
     params?: URLSearchParams,
     stop = false
@@ -81,7 +81,11 @@ export class TravelorService {
         locale: "en",
       });
     }
-    const data = await this.getTravelorHotelData(sessionId, params);
+    const data = await this.getTravelorHotelData(
+      command.countryCode,
+      sessionId,
+      params
+    );
     const hotels = data.hotelsData;
     this.syncData(command, sessionId, hotels);
     const { totalResults, status } = await this.getResponseStatus(data);
@@ -104,12 +108,13 @@ export class TravelorService {
   }
 
   private async getTravelorHotelData(
+    countryCode: string,
     sessionId: string,
     params: URLSearchParams
   ): Promise<TravelorHotelResponse> {
     const url = `${TRAVELOR_API.GET_HOTELS}/${sessionId}?${params.toString()}`;
     const response: any = await fetch(url, {
-      agent: this.proxyService.getProxy("il"),
+      agent: this.proxyService.getProxy(countryCode),
       headers: {
         "Content-Type": "application/json",
         accept: "application/json, text/plain, */*",

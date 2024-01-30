@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const CrawlerCommandZSchema = z.object({
   _id: z.string().optional(),
   dataSource: z.string().optional(), // Travelor or Booking
+  countryCode: z.string(),
   destination: z.object({
     placeId: z.string().optional(),
     destination: z.string().optional(),
