@@ -1,25 +1,38 @@
-import mongoose from "mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
 
-const sessionInputSchema = new mongoose.Schema(
-  {
-    bookingJobId: String,
-    travelorJobId: String,
-    destination: Object,
-    checkInDate: Date,
-    checkOutDate: Date,
-    guests: String,
-    adult: Number,
-    children: Number,
-    childrenAges: Array,
-    rooms: Number,
-  },
-  {
-    timestamps: true,
-    typeKey: "$type",
-  }
-);
+export type SessionInputDocument = SessionInput;
 
-const SessionInput =
-  mongoose.models.SessionInput ||
-  mongoose.model("SessionInput", sessionInputSchema);
-export default SessionInput;
+@Schema({ timestamps: true, typeKey: "$type" })
+export class SessionInput extends Document {
+  @Prop({ type: String })
+  bookingJobId: string;
+
+  @Prop({ type: String })
+  travelorJobId: string;
+
+  @Prop({ type: Object })
+  destination: object;
+
+  @Prop({ type: Date })
+  checkInDate: Date;
+
+  @Prop({ type: Date })
+  checkOutDate: Date;
+
+  @Prop({ type: String })
+  guests: string;
+
+  @Prop({ type: Number })
+  adult: number;
+
+  @Prop({ type: Number })
+  children: number;
+
+  @Prop({ type: [Number] })
+  childrenAges: number[];
+
+  @Prop({ type: Number })
+  rooms: number;
+}
+export const SessionInputSchema = SchemaFactory.createForClass(SessionInput);

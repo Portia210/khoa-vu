@@ -1,28 +1,51 @@
-import mongoose from "mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose, { Document } from "mongoose";
 
-const crawlerJobSchema = new mongoose.Schema(
-  {
-    dataSource: String,
-    sessionId: String,
-    countryCode: String,
-    destination: Object,
-    checkInDate: Date,
-    checkOutDate: Date,
-    guests: String,
-    adult: Number,
-    children: Number,
-    childrenAges: Array,
-    rooms: Number,
-    status: String,
-    message: mongoose.Schema.Types.Mixed, // Allow either Object or String
-    assignedTo: String, // Worker ID
-  },
-  {
-    timestamps: true,
-    typeKey: "$type",
-  }
-);
+export type CrawlerJobDocument = CrawlerJob;
 
-const CrawlerJob =
-  mongoose.models.CrawlerJob || mongoose.model("CrawlerJob", crawlerJobSchema);
-export default CrawlerJob;
+@Schema({ timestamps: true, typeKey: "$type" })
+export class CrawlerJob extends Document {
+  @Prop({ type: String })
+  dataSource: string;
+
+  @Prop({ type: String })
+  sessionId: string;
+
+  @Prop({ type: String })
+  countryCode: string;
+
+  @Prop({ type: Object })
+  destination: object;
+
+  @Prop({ type: Date })
+  checkInDate: Date;
+
+  @Prop({ type: Date })
+  checkOutDate: Date;
+
+  @Prop({ type: String })
+  guests: string;
+
+  @Prop({ type: Number })
+  adult: number;
+
+  @Prop({ type: Number })
+  children: number;
+
+  @Prop({ type: [Number] })
+  childrenAges: number[];
+
+  @Prop({ type: Number })
+  rooms: number;
+
+  @Prop({ type: String })
+  status: string;
+
+  @Prop({ type: mongoose.Schema.Types.Mixed })
+  message: object | string;
+
+  @Prop({ type: String })
+  assignedTo: string;
+}
+
+export const CrawlerJobSchema = SchemaFactory.createForClass(CrawlerJob);

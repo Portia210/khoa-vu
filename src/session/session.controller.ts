@@ -7,7 +7,10 @@ import {
 import { TravelorService } from "src/travelor/travelor.service";
 import { SessionService } from "./session.service";
 
-@Controller("session")
+@Controller({
+  path: "session",
+  version: "1",
+})
 export class SessionController {
   constructor(
     private readonly sessionService: SessionService,
@@ -15,7 +18,7 @@ export class SessionController {
     private readonly travelorService: TravelorService
   ) {}
 
-  @Post()
+  @Post("/")
   async createSession(@Body() payload: SessionInputDto) {
     const sessionInput = SessionInputZSchema.parse(payload);
     let id = await this.sessionService.checkIfSessionExist(sessionInput);

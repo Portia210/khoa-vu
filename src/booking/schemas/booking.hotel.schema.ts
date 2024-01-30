@@ -1,23 +1,36 @@
-import mongoose from "mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
 
-const bookingHotelSchema = new mongoose.Schema(
-  {
-    title: String,
-    picture_link: Object,
-    booking_link: String,
-    price: Object,
-    rate: Number,
-    reviews: Object,
-    stars: Number,
-    distance: Object,
-    jobId: String,
-  },
-  {
-    timestamps: true,
-  }
-);
+export type BookingHotelDocument = BookingHotel;
 
-const BookingHotel =
-  mongoose.models.BookingHotel ||
-  mongoose.model("BookingHotel", bookingHotelSchema);
-export default BookingHotel;
+@Schema({ timestamps: true })
+export class BookingHotel extends Document {
+  @Prop({ type: String })
+  title: string;
+
+  @Prop({ type: Object })
+  picture_link: object;
+
+  @Prop({ type: String })
+  booking_link: string;
+
+  @Prop({ type: Object })
+  price: object;
+
+  @Prop({ type: Number })
+  rate: number;
+
+  @Prop({ type: Object })
+  reviews: object;
+
+  @Prop({ type: Number })
+  stars: number;
+
+  @Prop({ type: Object })
+  distance: object;
+
+  @Prop({ type: String })
+  jobId: string;
+}
+
+export const BookingHotelSchema = SchemaFactory.createForClass(BookingHotel);

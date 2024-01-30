@@ -1,11 +1,18 @@
 import { Injectable } from "@nestjs/common";
-import BookingHotel from "src/booking/schemas/booking.hotel.schema";
 import { HotelAggregateResult } from "./types/types";
 import { filters } from "./utils/filers";
 import { filterCompareResults } from "./utils/filterCompareResults";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { BookingHotel } from "src/booking/schemas/booking.hotel.schema";
 
 @Injectable()
 export class AnalyticsService {
+  constructor(
+    @InjectModel(BookingHotel.name)
+    private bookingHotelModel: Model<BookingHotel>
+  ) {}
+
   async analytics(
     bookingJobId: string,
     travelorJobId: string,
@@ -21,11 +28,11 @@ export class AnalyticsService {
   }
 
   async compare(bookingJobId: string, travelorJobId: string) {
-    const hotels: HotelAggregateResult[] = await BookingHotel.aggregate(
-      filters(bookingJobId, travelorJobId)
-    ).sort({
-      travelorPrice: -1,
-    });
+    const hotels: HotelAggregateResult[] = await this.bookingHotelModel
+      .aggregate(filters(bookingJobId, travelorJobId))
+      .sort({
+        travelorPrice: -1,
+      });
     const results = await this.filterResults(hotels);
     return {
       results,

@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import fetch from "node-fetch";
+import { ProxyService } from "src/proxy/proxy.service";
 import { userAgent } from "src/shared/constants";
 import { CrawlerCommand } from "src/shared/types/CrawlerCommand";
 import { updateJobStatus } from "src/shared/utils/updateJobStatus";
@@ -11,7 +12,6 @@ import {
 } from "./types/booking.hotel.response";
 import { commandMapper } from "./utils/commandMapper";
 import { dataMapping } from "./utils/dataMapping";
-import { ProxyService } from "src/proxy/proxy.service";
 
 @Injectable()
 export class BookingService {

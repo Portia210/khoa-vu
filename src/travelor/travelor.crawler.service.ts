@@ -1,13 +1,18 @@
 import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
 import { cloneDeep } from "lodash";
-import { ClientSession } from "mongoose";
-import CrawlerJob from "src/session/schemas/crawler.job.schema";
+import { ClientSession, Model } from "mongoose";
+import { CrawlerJob } from "src/session/schemas/crawler.job.schema";
 import { DATA_SOURCES } from "src/shared/constants/dataSources";
 import { CrawlerCommandZSchema } from "src/shared/types/CrawlerCommand";
 import { SessionInputDto } from "src/shared/types/SessionInput.dto";
 
 @Injectable()
 export class TravelorCrawlerService {
+  constructor(
+    @InjectModel(CrawlerJob.name) private crawlerJobModel: Model<CrawlerJob>
+  ) {}
+
   /**
    *
    * @param sessionInput
@@ -17,7 +22,7 @@ export class TravelorCrawlerService {
     const sessionInput = cloneDeep(input);
     const command = CrawlerCommandZSchema.parse(sessionInput);
     command.dataSource = DATA_SOURCES.TRAVELOR;
-    const crawlerJob = new CrawlerJob(command);
+    const crawlerJob = new this.crawlerJobModel(command);
     const result = await crawlerJob.save({ session });
     return result;
   }
