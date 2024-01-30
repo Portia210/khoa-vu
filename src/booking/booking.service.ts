@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import fetch from "node-fetch";
 import { userAgent } from "src/shared/constants";
 import { CrawlerCommand } from "src/shared/types/CrawlerCommand";
-import { proxyAgent } from "src/shared/utils/fetchProxy";
 import { updateJobStatus } from "src/shared/utils/updateJobStatus";
 import { BOOKING_API } from "./constants";
 import { graphqlQuery } from "./constants/api";
@@ -12,9 +11,12 @@ import {
 } from "./types/booking.hotel.response";
 import { commandMapper } from "./utils/commandMapper";
 import { dataMapping } from "./utils/dataMapping";
+import { ProxyService } from "src/proxy/proxy.service";
 
 @Injectable()
 export class BookingService {
+  constructor(private readonly proxyService: ProxyService) {}
+
   async importHotels(command: CrawlerCommand): Promise<any> {
     console.log("importHotels booking", command);
     try {
@@ -42,7 +44,7 @@ export class BookingService {
       const response: BookingHotelResponse = await fetch(url, {
         method: "POST",
         body: JSON.stringify(payload),
-        agent: proxyAgent,
+        agent: this.proxyService.getProxy("il"),
         headers: {
           "Content-Type": "application/json",
           "user-agent": userAgent,
