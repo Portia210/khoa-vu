@@ -24,7 +24,7 @@ export class TravelorService {
       const canContinue = await updateJobStatus(command, "RUNNING");
       if (!canContinue) return;
       const commandMapped = commandMapper(command);
-      const sessionId = await this.getSession(commandMapped);
+      const sessionId = await this.getSession(commandMapped, command.countryCode);
       await this.getTravelorHotels(command, sessionId);
       await this.onFinish(command);
     } catch (error) {
@@ -51,10 +51,10 @@ export class TravelorService {
     });
   }
 
-  private async getSession(command: CrawlerCommand) {
+  private async getSession(command: any, countryCode: string) {
     const response: any = await fetch(TRAVELOR_API.GET_SESSION, {
       method: "POST",
-      agent: this.proxyService.getProxy(command.countryCode),
+      agent: this.proxyService.getProxy(countryCode),
       headers: {
         "Content-Type": "application/json",
         accept: "application/json, text/plain, */*",

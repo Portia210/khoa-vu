@@ -1,35 +1,38 @@
 import { Injectable } from "@nestjs/common";
+import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 import dayjs from "dayjs";
 import cloneDeep from "lodash/cloneDeep";
 import mongoose, { Model } from "mongoose";
+import { AnalyticsService } from "src/analytics/analytics.service";
+import { BookingHotel } from "src/booking/schemas/booking.hotel.schema";
 import { SessionInputDto } from "src/shared/types/SessionInput.dto";
+import { TravelorHotel } from "src/travelor/schemas/travelor.schema";
 import { TravelorCrawlerService } from "src/travelor/travelor.crawler.service";
 import { BookingCrawlerService } from "../booking/booking.crawler.service";
-import { AnalyticsService } from "src/analytics/analytics.service";
-import { SessionInput } from "./schemas/session.input.schema";
-import { InjectModel } from "@nestjs/mongoose";
 import { CrawlerJob } from "./schemas/crawler.job.schema";
-import { BookingHotel } from "src/booking/schemas/booking.hotel.schema";
-import { TravelorHotel } from "src/travelor/schemas/travelor.schema";
+import { SessionInput } from "./schemas/session.input.schema";
 
 @Injectable()
 export class SessionService {
   constructor(
     @InjectModel(SessionInput.name)
-    private sessionInputModel: Model<SessionInput>,
-    @InjectModel(CrawlerJob.name) private crawlerJobModel: Model<CrawlerJob>,
+    private readonly sessionInputModel: Model<SessionInput>,
+    @InjectModel(CrawlerJob.name)
+    private readonly crawlerJobModel: Model<CrawlerJob>,
     @InjectModel(BookingHotel.name)
-    private bookingHotelModel: Model<BookingHotel>,
+    private readonly bookingHotelModel: Model<BookingHotel>,
     @InjectModel(TravelorHotel.name)
-    private travelorHotelModel: Model<TravelorHotel>,
+    private readonly travelorHotelModel: Model<TravelorHotel>,
+    @InjectConnection() private readonly connection: mongoose.Connection,
     private readonly bookingCrawlerService: BookingCrawlerService,
     private readonly travelorCrawlerService: TravelorCrawlerService,
     private readonly analyticsService: AnalyticsService
   ) {}
 
   async createSession(sessionInput: SessionInputDto) {
-    const mongooseSession = await mongoose.startSession();
+    const mongooseSession = await this.connection.startSession();
     mongooseSession.startTransaction();
+
     try {
       const jobIds = await Promise.all([
         this.bookingCrawlerService.createCommand(sessionInput, mongooseSession),
@@ -41,10 +44,14 @@ export class SessionService {
       let data: any = cloneDeep(sessionInput);
       data.bookingJobId = jobIds[0]._id;
       data.travelorJobId = jobIds[1]._id;
-      const sessionInputSearch = new SessionInput(data);
+
+      const sessionInputSearch = new this.sessionInputModel(data);
       const result = await sessionInputSearch.save({
         session: mongooseSession,
       });
+
+      await mongooseSession.commitTransaction();
+
       return {
         _id: result._id,
         bookingCommand: jobIds[0],
@@ -53,11 +60,7 @@ export class SessionService {
     } catch (err) {
       console.error("createSession", err);
       await mongooseSession.abortTransaction();
-      await mongooseSession.endSession(); // Close the session in case of an error
       throw err;
-    } finally {
-      await mongooseSession.commitTransaction();
-      await mongooseSession.endSession(); // Close the session in any case
     }
   }
 

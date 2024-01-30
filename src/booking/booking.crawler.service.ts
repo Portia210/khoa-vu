@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
 import { cloneDeep } from "lodash";
 import { ClientSession, Model } from "mongoose";
+import { CrawlerJob } from "src/session/schemas/crawler.job.schema";
 import { DATA_SOURCES } from "src/shared/constants/dataSources";
 import { CrawlerCommandZSchema } from "src/shared/types/CrawlerCommand";
 import { SessionInputDto } from "src/shared/types/SessionInput.dto";
 import { autoSelectPlace } from "./utils/bookingAutoComplete/bookingAutoComplete";
-import { InjectModel } from "@nestjs/mongoose";
-import { CrawlerJob } from "src/session/schemas/crawler.job.schema";
 
 @Injectable()
 export class BookingCrawlerService {
@@ -19,7 +19,7 @@ export class BookingCrawlerService {
    * @param sessionInput
    * @returns CrawlerJob
    */
-  async createCommand(input: SessionInputDto, session?: ClientSession) {
+  async createCommand(input: SessionInputDto, session: ClientSession) {
     const sessionInput = cloneDeep(input);
     if (!sessionInput?.destination?.dest_type) {
       sessionInput.destination = await autoSelectPlace(
@@ -30,6 +30,9 @@ export class BookingCrawlerService {
     command.dataSource = DATA_SOURCES.BOOKING;
     const crawlerJob = new this.crawlerJobModel(command);
     const result = await crawlerJob.save({ session });
-    return result;
+    return {
+      _id: result._id,
+      ...command,
+    };
   }
 }

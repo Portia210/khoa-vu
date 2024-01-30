@@ -3,14 +3,17 @@ import { Document } from "mongoose";
 
 export type SessionInputDocument = SessionInput;
 
-@Schema({ timestamps: true, typeKey: "$type" })
+@Schema({ timestamps: true })
 export class SessionInput extends Document {
   @Prop({ type: String })
   bookingJobId: string;
 
   @Prop({ type: String })
   travelorJobId: string;
-
+  
+  @Prop({ type: String })
+  countryCode: string;
+  
   @Prop({ type: Object })
   destination: object;
 

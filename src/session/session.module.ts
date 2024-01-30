@@ -12,6 +12,7 @@ import {
 } from "src/travelor/schemas/travelor.schema";
 import { TravelorModule } from "src/travelor/travelor.module";
 import { CrawlerJob, CrawlerJobSchema } from "./schemas/crawler.job.schema";
+
 import {
   SessionInput,
   SessionInputSchema,

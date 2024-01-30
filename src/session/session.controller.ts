@@ -26,9 +26,8 @@ export class SessionController {
       console.log("Creating new session");
       const { _id, bookingCommand, travelorCommand } =
         await this.sessionService.createSession(sessionInput);
-
       await Promise.all([
-        this.bookingService.importHotels(bookingCommand),
+        // this.bookingService.importHotels(bookingCommand),
         this.travelorService.importHotels(travelorCommand),
       ]);
       id = _id;

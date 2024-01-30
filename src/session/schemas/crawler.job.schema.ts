@@ -3,7 +3,7 @@ import mongoose, { Document } from "mongoose";
 
 export type CrawlerJobDocument = CrawlerJob;
 
-@Schema({ timestamps: true, typeKey: "$type" })
+@Schema({ timestamps: true })
 export class CrawlerJob extends Document {
   @Prop({ type: String })
   dataSource: string;

@@ -18,12 +18,16 @@ export class TravelorCrawlerService {
    * @param sessionInput
    * @returns CrawlerJob
    */
-  async createCommand(input: SessionInputDto, session?: ClientSession) {
+  async createCommand(input: SessionInputDto, session: ClientSession) {
+    console.log("createCommand travelor", input);
     const sessionInput = cloneDeep(input);
     const command = CrawlerCommandZSchema.parse(sessionInput);
     command.dataSource = DATA_SOURCES.TRAVELOR;
     const crawlerJob = new this.crawlerJobModel(command);
     const result = await crawlerJob.save({ session });
-    return result;
+    return {
+      _id: result._id,
+      ...command,
+    };
   }
 }
