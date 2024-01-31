@@ -17,6 +17,7 @@ export class ProxyService {
     const proxyUrl = `${this.baseProxyUrl}-${countryCode.toLowerCase()}:${
       this.proxyAuthPort
     }`;
+    console.log("proxyUrl", proxyUrl);
     const proxyAgent = new HttpsProxyAgent(proxyUrl);
     return proxyAgent;
   }

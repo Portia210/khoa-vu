@@ -78,6 +78,7 @@ export class BookingService {
         });
       const results = response?.searchQueries?.search?.results || [];
       const hotelResults = results.flat();
+      console.log('hotelResults', hotelResults.length)
       pagination = response?.searchQueries?.search?.pagination; // if this is null
       if (!pagination) {
         if (retryCount >= 5)
