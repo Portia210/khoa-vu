@@ -6,6 +6,7 @@ import {
 } from "src/shared/types/SessionInput.dto";
 import { TravelorService } from "src/travelor/travelor.service";
 import { SessionService } from "./session.service";
+import { ZodPipe } from "src/auth/pipe/zod.pipe";
 
 @Controller({
   path: "session",
@@ -19,7 +20,7 @@ export class SessionController {
   ) {}
 
   @Post("/")
-  async createSession(@Body() payload: SessionInputDto) {
+  async createSession(@Body(new ZodPipe(SessionInputZSchema)) payload: SessionInputDto) {
     const sessionInput = SessionInputZSchema.parse(payload);
     let id = await this.sessionService.checkIfSessionExist(sessionInput);
     if (!id) {
