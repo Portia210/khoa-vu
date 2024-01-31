@@ -7,11 +7,13 @@ import {
 import { TravelorController } from "./travelor.controller";
 import { TravelorCrawlerService } from "./travelor.crawler.service";
 import { TravelorService } from "./travelor.service";
+import { TravelorHotel, TravelorHotelSchema } from "./schemas/travelor.schema";
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: CrawlerJob.name, schema: CrawlerJobSchema },
+      { name: TravelorHotel.name, schema: TravelorHotelSchema },
     ]),
   ],
   controllers: [TravelorController],

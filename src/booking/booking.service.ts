@@ -12,12 +12,17 @@ import {
 import { commandMapper } from "./utils/commandMapper";
 import { dataMapping } from "./utils/dataMapping";
 import { CrawlerJobService } from "src/session/crawler.job.service";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { BookingHotel } from "./schemas/booking.hotel.schema";
 
 @Injectable()
 export class BookingService {
   constructor(
     private readonly proxyService: ProxyService,
-    private readonly crawlerJobService: CrawlerJobService
+    private readonly crawlerJobService: CrawlerJobService,
+    @InjectModel(BookingHotel.name)
+    private readonly bookingHotelModel: Model<BookingHotel>
   ) {}
 
   async importHotels(command: CrawlerCommand): Promise<any> {
@@ -94,18 +99,13 @@ export class BookingService {
     hotelResults: BookingHotelResult[]
   ) {
     const hotelFiltered = dataMapping(command, hotelResults);
-    await Promise.allSettled([
-      fetch(BOOKING_API.SYNC_URL, {
-        method: "POST",
-        body: JSON.stringify(hotelFiltered),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((res) => res.json()),
-    ]);
+    const bookingHotels = hotelFiltered.map(
+      (hotel: any) => new this.bookingHotelModel(hotel)
+    );
+    await this.bookingHotelModel.insertMany(bookingHotels);
   }
 
   private async onFinish(command: CrawlerCommand) {
-    this.crawlerJobService.updateJobStatus(command, "FINISHED");
+    await this.crawlerJobService.updateJobStatus(command, "FINISHED");
   }
 }

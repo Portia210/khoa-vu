@@ -13,18 +13,26 @@ import fetch from "node-fetch";
 import { userAgent } from "src/shared/constants";
 import { ProxyService } from "src/proxy/proxy.service";
 import { CrawlerJobService } from "src/session/crawler.job.service";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { TravelorHotel as TravelorHotelModel } from "src/travelor/schemas/travelor.schema";
 
 @Injectable()
 export class TravelorService {
   constructor(
     private readonly proxyService: ProxyService,
-    private readonly crawlerJobService: CrawlerJobService
+    private readonly crawlerJobService: CrawlerJobService,
+    @InjectModel(TravelorHotelModel.name)
+    private readonly travelorHotelModel: Model<TravelorHotelModel>
   ) {}
 
   async importHotels(command: CrawlerCommand) {
     console.log("importHotels travelor", command);
     try {
-      const canContinue = await this.crawlerJobService.updateJobStatus(command, "RUNNING");
+      const canContinue = await this.crawlerJobService.updateJobStatus(
+        command,
+        "RUNNING"
+      );
       if (!canContinue) return;
       const commandMapped = commandMapper(command);
       const sessionId = await this.getSession(
@@ -44,21 +52,24 @@ export class TravelorService {
     hotels: TravelorHotelData[]
   ) {
     const dataMapped = dataMapping(command, sessionId, hotels);
-    await Promise.allSettled([
-      fetch(TRAVELOR_API.SYNC_URL, {
-        method: "POST",
-        body: JSON.stringify(dataMapped),
-        headers: {
-          "Content-Type": "application/json",
+
+    const bulkOps = dataMapped.map((hotel: any) => ({
+      updateOne: {
+        filter: {
+          travelor_link: hotel?.travelor_link,
         },
-      }).then((res) => res.json()),
-    ]).catch((err) => {
-      console.error("error on onFinish", err);
-    });
+        update: {
+          $set: {
+            ...hotel,
+          },
+        },
+        upsert: true,
+      },
+    }));
+    await this.travelorHotelModel.bulkWrite(bulkOps);
   }
 
   private async getSession(command: any, countryCode: string) {
-    console.log("getSession", JSON.stringify(command));
     const response: any = await fetch(TRAVELOR_API.GET_SESSION, {
       method: "POST",
       agent: this.proxyService.getProxy(countryCode),
@@ -147,6 +158,6 @@ export class TravelorService {
   }
 
   private async onFinish(command: any) {
-    this.crawlerJobService.updateJobStatus(command, "FINISHED");
+    await this.crawlerJobService.updateJobStatus(command, "FINISHED");
   }
 }
