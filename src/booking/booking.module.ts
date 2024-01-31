@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { ProxyModule } from "src/proxy/proxy.module";
 import {
   CrawlerJob,
   CrawlerJobSchema,
@@ -15,7 +14,6 @@ import {
 
 @Module({
   imports: [
-    ProxyModule,
     MongooseModule.forFeature([
       { name: BookingHotel.name, schema: BookingHotelSchema },
       { name: CrawlerJob.name, schema: CrawlerJobSchema },

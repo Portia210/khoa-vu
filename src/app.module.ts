@@ -8,6 +8,7 @@ import { ProxyModule } from "./proxy/proxy.module";
 import { SessionModule } from "./session/session.module";
 import { AnalyticsModule } from "./analytics/analytics.module";
 import { MongooseModule } from "@nestjs/mongoose";
+import { CrawlerJobModule } from "./session/crawler.job.module";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MongooseModule } from "@nestjs/mongoose";
     ProxyModule,
     SessionModule,
     AnalyticsModule,
+    CrawlerJobModule
   ],
   controllers: [AppController],
   providers: [AppService],

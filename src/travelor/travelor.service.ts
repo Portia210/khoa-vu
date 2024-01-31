@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { CrawlerCommand } from "src/shared/types/CrawlerCommand";
 import { sleep } from "src/shared/utils/sleep";
-import { updateJobStatus } from "src/shared/utils/updateJobStatus";
 import { TRAVELOR_API, TRAVERLOR_CONFIG } from "./constants";
 import {
   TravelorHotelData,
@@ -13,23 +12,30 @@ import { dataMapping } from "./utils/dataMapping";
 import fetch from "node-fetch";
 import { userAgent } from "src/shared/constants";
 import { ProxyService } from "src/proxy/proxy.service";
+import { CrawlerJobService } from "src/session/crawler.job.service";
 
 @Injectable()
 export class TravelorService {
-  constructor(private readonly proxyService: ProxyService) {}
+  constructor(
+    private readonly proxyService: ProxyService,
+    private readonly crawlerJobService: CrawlerJobService
+  ) {}
 
   async importHotels(command: CrawlerCommand) {
     console.log("importHotels travelor", command);
     try {
-      const canContinue = await updateJobStatus(command, "RUNNING");
+      const canContinue = await this.crawlerJobService.updateJobStatus(command, "RUNNING");
       if (!canContinue) return;
       const commandMapped = commandMapper(command);
-      const sessionId = await this.getSession(commandMapped, command.countryCode);
+      const sessionId = await this.getSession(
+        commandMapped,
+        command.countryCode
+      );
       await this.getTravelorHotels(command, sessionId);
       await this.onFinish(command);
     } catch (error) {
       console.error("error on importHotels", error);
-      await updateJobStatus(command, "FAILED", error);
+      await this.crawlerJobService.updateJobStatus(command, "FAILED", error);
     }
   }
   private async syncData(
@@ -52,6 +58,7 @@ export class TravelorService {
   }
 
   private async getSession(command: any, countryCode: string) {
+    console.log("getSession", JSON.stringify(command));
     const response: any = await fetch(TRAVELOR_API.GET_SESSION, {
       method: "POST",
       agent: this.proxyService.getProxy(countryCode),
@@ -140,6 +147,6 @@ export class TravelorService {
   }
 
   private async onFinish(command: any) {
-    updateJobStatus(command, "FINISHED");
+    this.crawlerJobService.updateJobStatus(command, "FINISHED");
   }
 }

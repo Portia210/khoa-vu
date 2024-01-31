@@ -3,7 +3,6 @@ import fetch from "node-fetch";
 import { ProxyService } from "src/proxy/proxy.service";
 import { userAgent } from "src/shared/constants";
 import { CrawlerCommand } from "src/shared/types/CrawlerCommand";
-import { updateJobStatus } from "src/shared/utils/updateJobStatus";
 import { BOOKING_API } from "./constants";
 import { graphqlQuery } from "./constants/api";
 import {
@@ -12,22 +11,33 @@ import {
 } from "./types/booking.hotel.response";
 import { commandMapper } from "./utils/commandMapper";
 import { dataMapping } from "./utils/dataMapping";
+import { CrawlerJobService } from "src/session/crawler.job.service";
 
 @Injectable()
 export class BookingService {
-  constructor(private readonly proxyService: ProxyService) {}
+  constructor(
+    private readonly proxyService: ProxyService,
+    private readonly crawlerJobService: CrawlerJobService
+  ) {}
 
   async importHotels(command: CrawlerCommand): Promise<any> {
     console.log("importHotels booking", command);
     try {
-      const canContinue = await updateJobStatus(command, "RUNNING");
+      const canContinue = await this.crawlerJobService.updateJobStatus(
+        command,
+        "RUNNING"
+      );
       if (!canContinue) return;
       const commandMapped = commandMapper(command);
       await this.getBookingHotels(command, commandMapped);
       await this.onFinish(command);
     } catch (error) {
       console.error("error on importHotels", error);
-      await updateJobStatus(command, "FAILED", JSON.stringify(error));
+      await this.crawlerJobService.updateJobStatus(
+        command,
+        "FAILED",
+        JSON.stringify(error)
+      );
     }
   }
 
@@ -96,6 +106,6 @@ export class BookingService {
   }
 
   private async onFinish(command: CrawlerCommand) {
-    updateJobStatus(command, "FINISHED");
+    this.crawlerJobService.updateJobStatus(command, "FINISHED");
   }
 }
