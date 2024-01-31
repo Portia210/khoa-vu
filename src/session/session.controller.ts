@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Param, Post } from "@nestjs/common";
 import { BookingService } from "src/booking/booking.service";
 import {
   SessionInputDto,
@@ -35,5 +35,10 @@ export class SessionController {
       console.log("Session existed returning...", id);
     }
     return id;
+  }
+
+  @Post("/compare/:id")
+  async compareHotels(@Param("id") id: string) {
+    return await this.sessionService.getSessionResult(id);
   }
 }

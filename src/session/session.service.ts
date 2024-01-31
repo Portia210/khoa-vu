@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 import dayjs from "dayjs";
 import cloneDeep from "lodash/cloneDeep";
@@ -73,9 +73,10 @@ export class SessionService {
       .exec();
     return session?._id || null;
   }
+
   async getSessionResult(id: string) {
     const sessionInput = await this.sessionInputModel.findById(id).exec();
-    if (!sessionInput) throw new Error("Session not found");
+    if (!sessionInput) throw new BadRequestException("Session not found");
 
     const { bookingJobId, travelorJobId } = sessionInput;
     const [bookingJob, travelorJob] = await Promise.all([
@@ -83,7 +84,7 @@ export class SessionService {
       this.crawlerJobModel.findById(travelorJobId).exec(),
     ]);
 
-    if (!bookingJob || !travelorJob) throw new Error("Job not found");
+    if (!bookingJob || !travelorJob) throw new BadRequestException("Job not found");
 
     let status = "RUNNING";
     if (bookingJob.status === "FINISHED" && travelorJob.status === "FINISHED") {
