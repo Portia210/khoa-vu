@@ -33,7 +33,7 @@ const createTravelorLink = (
     'YYYY-MM-DD',
   )}&check_out=${dayjs(command?.checkOutDate).format('YYYY-MM-DD')}&guests=${
     command?.guests
-  }&country=VN&currency=USD`;
+  }&country=VN&currency=USD&session=${sessionId}`;
 };
 
 export { dataMapping };

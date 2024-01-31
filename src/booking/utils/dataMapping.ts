@@ -24,6 +24,7 @@ export const dataMapping = (
       booking_link: getBookingLink(command, hotelResult?.basicPropertyData),
       price: {
         amount: sumPrice,
+        currency: hotelResult?.blocks?.[0]?.finalPrice?.currency,
       },
       rate: hotelResult?.basicPropertyData?.reviewScore?.score,
       reviews: hotelResult?.basicPropertyData?.reviewScore,

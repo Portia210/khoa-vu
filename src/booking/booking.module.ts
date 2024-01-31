@@ -1,11 +1,26 @@
-import { Module } from '@nestjs/common';
-import { BookingService } from './booking.service';
-import { BookingController } from './booking.controller';
-import { ProxyModule } from 'src/proxy/proxy.module';
+import { Module } from "@nestjs/common";
+import { MongooseModule } from "@nestjs/mongoose";
+import {
+  CrawlerJob,
+  CrawlerJobSchema,
+} from "src/session/schemas/crawler.job.schema";
+import { BookingController } from "./booking.controller";
+import { BookingCrawlerService } from "./booking.crawler.service";
+import { BookingService } from "./booking.service";
+import {
+  BookingHotel,
+  BookingHotelSchema,
+} from "./schemas/booking.hotel.schema";
 
 @Module({
-  imports: [ProxyModule],
+  imports: [
+    MongooseModule.forFeature([
+      { name: BookingHotel.name, schema: BookingHotelSchema },
+      { name: CrawlerJob.name, schema: CrawlerJobSchema },
+    ]),
+  ],
   controllers: [BookingController],
-  providers: [BookingService],
+  providers: [BookingService, BookingCrawlerService],
+  exports: [BookingCrawlerService, BookingService],
 })
 export class BookingModule {}
