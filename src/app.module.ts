@@ -10,6 +10,7 @@ import { AnalyticsModule } from "./analytics/analytics.module";
 import { MongooseModule } from "@nestjs/mongoose";
 import { CrawlerJobModule } from "./session/crawler.job.module";
 import { AuthModule } from './auth/auth.module';
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   imports: [
@@ -18,13 +19,14 @@ import { AuthModule } from './auth/auth.module';
       envFilePath: [".env", ".env.local", ".env.test"],
     }),
     MongooseModule.forRoot(process.env.DATABASE_URL),
+    ScheduleModule.forRoot(),
     BookingModule,
     TravelorModule,
     ProxyModule,
     SessionModule,
     AnalyticsModule,
     CrawlerJobModule,
-    AuthModule
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

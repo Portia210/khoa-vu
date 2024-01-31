@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectConnection, InjectModel } from "@nestjs/mongoose";
+import { Cron, CronExpression } from "@nestjs/schedule";
 import dayjs from "dayjs";
 import cloneDeep from "lodash/cloneDeep";
 import mongoose, { Model } from "mongoose";
@@ -14,6 +15,7 @@ import { SessionInput } from "./schemas/session.input.schema";
 
 @Injectable()
 export class SessionService {
+
   constructor(
     @InjectModel(SessionInput.name)
     private readonly sessionInputModel: Model<SessionInput>,
@@ -68,7 +70,7 @@ export class SessionService {
     const session = await this.sessionInputModel
       .findOne({
         ...sessionInput,
-        createdAt: { $gt: dayjs().subtract(1, "day").toDate() },
+        createdAt: { $gt: dayjs().subtract(10, "minute").toDate() },
       })
       .exec();
     return session?._id || null;
@@ -84,7 +86,8 @@ export class SessionService {
       this.crawlerJobModel.findById(travelorJobId).exec(),
     ]);
 
-    if (!bookingJob || !travelorJob) throw new BadRequestException("Job not found");
+    if (!bookingJob || !travelorJob)
+      throw new BadRequestException("Job not found");
 
     let status = "RUNNING";
     if (bookingJob.status === "FINISHED" && travelorJob.status === "FINISHED") {
@@ -108,7 +111,7 @@ export class SessionService {
   }
 
   async cleanUp(): Promise<number> {
-    return (await mongoose.startSession()).withTransaction(async (session) => {
+    return (await this.connection.startSession()).withTransaction(async (session) => {
       let totalRemoved = 0;
       const oldSessions = await this.sessionInputModel
         .find({
@@ -133,8 +136,14 @@ export class SessionService {
             bookingDeleteResult.deletedCount;
         })
       );
-
       return totalRemoved;
     });
+  }
+
+  @Cron(CronExpression.EVERY_30_MINUTES)
+  async handleCron() {
+    console.log("Clean up old sessions");
+    const total = await this.cleanUp();
+    console.log("Total removed", total);
   }
 }
