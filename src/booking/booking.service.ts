@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import fetch from "node-fetch";
 import { ProxyService } from "src/proxy/proxy.service";
 import { userAgent } from "src/shared/constants";
@@ -15,6 +15,7 @@ import { CrawlerJobService } from "src/session/crawler.job.service";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { BookingHotel } from "./schemas/booking.hotel.schema";
+import { isAxiosError } from "axios";
 
 @Injectable()
 export class BookingService {
@@ -54,7 +55,7 @@ export class BookingService {
       rowsPerPage: 100,
     };
 
-    const fetchBookingHotels = async (payload: any) => {
+    const fetchBookingHotels = async (payload: any, retryCount = 0) => {
       const url = `${BOOKING_API.GRAPHQL}?selected_currency=USD`;
       const response: BookingHotelResponse = await fetch(url, {
         method: "POST",
@@ -66,14 +67,22 @@ export class BookingService {
           authority: "www.booking.com",
           accept: "*/*",
         },
-      }).then(async (res) => {
-        return await res.json().then((res: any) => res.data);
-      });
+      })
+        .then(async (res) => {
+          return await res.json().then((res: any) => res.data);
+        })
+        .catch((err) => {
+          if (isAxiosError(err)) {
+            console.error("fetchBookingHotels", err);
+          }
+        });
       const results = response?.searchQueries?.search?.results || [];
       const hotelResults = results.flat();
-      pagination = response?.searchQueries?.search?.pagination;
+      pagination = response?.searchQueries?.search?.pagination; // if this is null
       if (!pagination) {
-        return await fetchBookingHotels(payload);
+        if (retryCount >= 5)
+          throw new BadRequestException("Pagination is null");
+        return await fetchBookingHotels(payload, retryCount++);
       } else {
         this.syncData(command, hotelResults);
       }

@@ -5,7 +5,10 @@ import { BookingService } from "./booking.service";
 /**
  * @deprecated This controller is not used anymore
  */
-@Controller("booking")
+@Controller({
+  path: "booking",
+  version: "1",
+})
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
 
