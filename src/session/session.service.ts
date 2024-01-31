@@ -115,7 +115,7 @@ export class SessionService {
       let totalRemoved = 0;
       const oldSessions = await this.sessionInputModel
         .find({
-          createdAt: { $lt: dayjs().subtract(1, "day").toDate() },
+          createdAt: { $lt: dayjs().subtract(10, "minute").toDate() },
         })
         .session(session);
 
