@@ -20,18 +20,18 @@ export class SessionController {
   ) {}
 
   @Post("/")
-  async createSession(@Body(new ZodPipe(SessionInputZSchema)) payload: SessionInputDto) {
+  async createSession(
+    @Body(new ZodPipe(SessionInputZSchema)) payload: SessionInputDto
+  ) {
     const sessionInput = SessionInputZSchema.parse(payload);
     let id = await this.sessionService.checkIfSessionExist(sessionInput);
     if (!id) {
       console.log("Creating new session");
       const { _id, bookingCommand, travelorCommand } =
         await this.sessionService.createSession(sessionInput);
-      await Promise.all([
-        this.bookingService.importHotels(bookingCommand),
+      this.bookingService.importHotels(bookingCommand),
         this.travelorService.importHotels(travelorCommand),
-      ]);
-      id = _id;
+        (id = _id);
     } else {
       console.log("Session existed returning...", id);
     }
