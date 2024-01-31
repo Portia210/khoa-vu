@@ -140,7 +140,7 @@ export class SessionService {
     });
   }
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCron() {
     console.log("Clean up old sessions");
     const total = await this.cleanUp();
