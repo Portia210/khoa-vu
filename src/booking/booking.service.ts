@@ -16,6 +16,8 @@ import {
 import { commandMapper } from "./utils/commandMapper";
 import { dataMapping } from "./utils/dataMapping";
 import { sleep } from "src/shared/utils/sleep";
+import { Agent } from "https";
+import { ProxyType } from "src/proxy/types";
 
 @Injectable()
 export class BookingService {
@@ -55,15 +57,21 @@ export class BookingService {
       rowsPerPage: 100,
     };
 
-    const fetchBookingHotels = async (payload: any, retryCount = 0) => {
+    const fetchBookingHotels = async (
+      payload: any,
+      agent: any,
+      retryCount = 0
+    ) => {
       const url = `${BOOKING_API.GRAPHQL}?selected_currency=USD`;
       const response: BookingHotelResponse = await fetch(url, {
         method: "POST",
         body: JSON.stringify(payload),
-        agent: this.proxyService.getProxy(command.countryCode),
+        agent,
+        redirect: "follow",
         headers: {
           "Content-Type": "application/json",
           "user-agent": userAgent,
+          "Cache-Control": "no-cache",
           accept: "application/json, text/plain, */*",
         },
       }).then(async (res) => {
@@ -73,13 +81,15 @@ export class BookingService {
       });
       const results = response?.searchQueries?.search?.results || [];
       const hotelResults = results.flat();
-      console.log('hotelResults', hotelResults.length)
+      console.log("hotelResults", hotelResults.length);
       pagination = response?.searchQueries?.search?.pagination;
       if (!pagination) {
-        if (retryCount >= 5) throw new BadRequestException("Pagination is null");
-        console.log("fetchBookingHotels Retry count", retryCount);
         await sleep(500 * retryCount);
-        return await fetchBookingHotels(payload, retryCount + 1);
+        if (retryCount <= 2) {
+          agent = this.proxyService.getProxy("il", ProxyType.DATACENTER);
+          return await fetchBookingHotels(payload, agent, retryCount + 1);
+        }
+        throw new BadRequestException("Pagination is null");
       } else {
         this.syncData(command, hotelResults);
       }
@@ -92,7 +102,8 @@ export class BookingService {
         query: graphqlQuery,
         variables,
       };
-      pagination = await fetchBookingHotels(payload);
+      const proxyAgent = this.proxyService.getProxy(command.countryCode);
+      pagination = await fetchBookingHotels(payload, proxyAgent);
       paginationInput.offset += paginationInput.rowsPerPage;
     } while (
       paginationInput.offset < pagination.nbResultsTotal &&

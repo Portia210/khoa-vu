@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { HttpsProxyAgent } from "https-proxy-agent";
+import { ProxyType } from "./types";
 
 @Injectable()
 export class ProxyService {
@@ -12,7 +13,7 @@ export class ProxyService {
       this.configService.getOrThrow<string>("PROXY_AUTH_PORT");
   }
 
-  getProxy(countryCode = "il") {
+  getProxy(countryCode = "il", proxyType: ProxyType = ProxyType.DATACENTER) {
     const proxyUrl = `${this.baseProxyUrl}-${countryCode.toLowerCase()}:${
       this.proxyAuthPort
     }`;
