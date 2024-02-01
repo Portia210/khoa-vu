@@ -12,8 +12,7 @@ export class ProxyService {
       this.configService.getOrThrow<string>("PROXY_AUTH_PORT");
   }
 
-  getProxy(countryCode: string) {
-    if (!countryCode) throw new Error("Country code is required");
+  getProxy(countryCode = "il") {
     const proxyUrl = `${this.baseProxyUrl}-${countryCode.toLowerCase()}:${
       this.proxyAuthPort
     }`;
