@@ -11,7 +11,7 @@ export const commandMapper = (command: CrawlerCommand) => {
     place_id: command?.destination?.placeId,
     check_in: dayjs(command?.checkInDate).format('YYYY-MM-DD'),
     check_out: dayjs(command?.checkOutDate).format('YYYY-MM-DD'),
-    country: 'US',
+    country: command?.countryCode?.toLowerCase() || "US",
     currency: 'USD',
     net: 0,
     query_text: command?.destination?.destination,

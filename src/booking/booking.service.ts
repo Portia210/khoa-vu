@@ -1,21 +1,20 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
 import fetch from "node-fetch";
 import { ProxyService } from "src/proxy/proxy.service";
+import { CrawlerJobService } from "src/session/crawler.job.service";
 import { userAgent } from "src/shared/constants";
 import { CrawlerCommand } from "src/shared/types/CrawlerCommand";
 import { BOOKING_API } from "./constants";
 import { graphqlQuery } from "./constants/api";
+import { BookingHotel } from "./schemas/booking.hotel.schema";
 import {
   BookingHotelResponse,
   BookingHotelResult,
 } from "./types/booking.hotel.response";
 import { commandMapper } from "./utils/commandMapper";
 import { dataMapping } from "./utils/dataMapping";
-import { CrawlerJobService } from "src/session/crawler.job.service";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { BookingHotel } from "./schemas/booking.hotel.schema";
-import { isAxiosError } from "axios";
 
 @Injectable()
 export class BookingService {
@@ -64,26 +63,21 @@ export class BookingService {
         headers: {
           "Content-Type": "application/json",
           "user-agent": userAgent,
-          authority: "www.booking.com",
-          accept: "*/*",
+          accept: "application/json, text/plain, */*",
         },
-      })
-        .then(async (res) => {
-          return await res.json().then((res: any) => res.data);
-        })
-        .catch((err) => {
-          if (isAxiosError(err)) {
-            console.error("fetchBookingHotels", err);
-          }
-        });
+      }).then(async (res) => {
+        if (res.ok) return await res.json().then((res: any) => res.data);
+        console.log("fetchBookingHotels error", res);
+        return [];
+      });
       const results = response?.searchQueries?.search?.results || [];
       const hotelResults = results.flat();
-      console.log('hotelResults', hotelResults.length)
+      console.log("hotelResults", hotelResults.length);
       pagination = response?.searchQueries?.search?.pagination; // if this is null
       if (!pagination) {
-        if (retryCount >= 5)
-          throw new BadRequestException("Pagination is null");
-        return await fetchBookingHotels(payload, retryCount++);
+        if (retryCount >= 5) throw new Error("Pagination is null");
+        console.log("fetchBookingHotels Retry count", retryCount);
+        return await fetchBookingHotels(payload, retryCount + 1);
       } else {
         this.syncData(command, hotelResults);
       }

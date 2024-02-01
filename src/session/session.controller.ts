@@ -30,7 +30,7 @@ export class SessionController {
       const { _id, bookingCommand, travelorCommand } =
         await this.sessionService.createSession(sessionInput);
       this.bookingService.importHotels(bookingCommand),
-        this.travelorService.importHotels(travelorCommand),
+      this.travelorService.importHotels(travelorCommand),
         (id = _id);
     } else {
       console.log("Session existed returning...", id);

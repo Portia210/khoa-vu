@@ -16,6 +16,7 @@ import { CrawlerJobService } from "src/session/crawler.job.service";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { TravelorHotel as TravelorHotelModel } from "src/travelor/schemas/travelor.schema";
+import { cloneDeep } from "lodash";
 
 @Injectable()
 export class TravelorService {
@@ -70,6 +71,8 @@ export class TravelorService {
   }
 
   private async getSession(command: any, countryCode: string) {
+    const payload = cloneDeep(command);
+    payload.country = payload.country.toUpperCase();
     const response: any = await fetch(TRAVELOR_API.GET_SESSION, {
       method: "POST",
       agent: this.proxyService.getProxy(countryCode),
@@ -78,8 +81,11 @@ export class TravelorService {
         accept: "application/json, text/plain, */*",
         authorization: TRAVERLOR_CONFIG.BEARER_TOKEN,
       },
-      body: JSON.stringify(command),
-    }).then((res) => res.json());
+      body: JSON.stringify(payload),
+    }).then(async (res) => {
+      if (res.ok) return await res.json();
+      console.log("getSession error", res);
+    });
     return response.session;
   }
 
@@ -106,7 +112,7 @@ export class TravelorService {
     );
     const hotels = data.hotelsData;
     this.syncData(command, sessionId, hotels);
-    const { totalResults, status } = await this.getResponseStatus(data);
+    const { totalResults, status } = this.getResponseStatus(data);
     params = new URLSearchParams({
       sort_by: "distance",
       sort: "asc",
@@ -148,9 +154,7 @@ export class TravelorService {
     };
   }
 
-  private async getResponseStatus(
-    data: TravelorHotelResponse
-  ): Promise<TravelorHotelStatus> {
+  private getResponseStatus(data: TravelorHotelResponse): TravelorHotelStatus {
     return {
       totalResults: data?.meta?.all?.total || 100,
       status: data.status || "finished",
