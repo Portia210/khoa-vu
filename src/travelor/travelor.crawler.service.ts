@@ -19,7 +19,6 @@ export class TravelorCrawlerService {
    * @returns CrawlerJob
    */
   async createCommand(input: SessionInputDto, session: ClientSession) {
-    console.log("createCommand travelor", input);
     const sessionInput = cloneDeep(input);
     const command = CrawlerCommandZSchema.parse(sessionInput);
     command.dataSource = DATA_SOURCES.TRAVELOR;

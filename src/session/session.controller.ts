@@ -25,7 +25,7 @@ export class SessionController {
   ) {
     const sessionInput = SessionInputZSchema.parse(payload);
     let id = await this.sessionService.checkIfSessionExist(sessionInput);
-    if (!id) {
+    if (true) {
       console.log("Creating new session");
       const { _id, bookingCommand, travelorCommand } =
         await this.sessionService.createSession(sessionInput);

@@ -15,6 +15,7 @@ import {
 } from "./types/booking.hotel.response";
 import { commandMapper } from "./utils/commandMapper";
 import { dataMapping } from "./utils/dataMapping";
+import { sleep } from "src/shared/utils/sleep";
 
 @Injectable()
 export class BookingService {
@@ -72,11 +73,12 @@ export class BookingService {
       });
       const results = response?.searchQueries?.search?.results || [];
       const hotelResults = results.flat();
-      console.log("hotelResults", hotelResults.length);
-      pagination = response?.searchQueries?.search?.pagination; // if this is null
+      console.log('hotelResults', hotelResults.length)
+      pagination = response?.searchQueries?.search?.pagination;
       if (!pagination) {
-        if (retryCount >= 5) throw new Error("Pagination is null");
+        if (retryCount >= 5) throw new BadRequestException("Pagination is null");
         console.log("fetchBookingHotels Retry count", retryCount);
+        await sleep(500 * retryCount);
         return await fetchBookingHotels(payload, retryCount + 1);
       } else {
         this.syncData(command, hotelResults);
