@@ -85,7 +85,10 @@ export class BookingService {
       pagination = response?.searchQueries?.search?.pagination;
       if (!pagination) {
         await sleep(500 * retryCount);
-        if (retryCount <= 2) {
+        if (retryCount < 2) {
+          return await fetchBookingHotels(payload, agent, retryCount + 1);
+        } else if (retryCount < 3) {
+          console.log(`retry count ${retryCount} falback to il proxy`);
           agent = this.proxyService.getProxy("il", ProxyType.DATACENTER);
           return await fetchBookingHotels(payload, agent, retryCount + 1);
         }
