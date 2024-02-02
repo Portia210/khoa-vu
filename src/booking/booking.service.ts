@@ -3,7 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import fetch from "node-fetch";
 import { ProxyService } from "src/proxy/proxy.service";
-import { ProxyType } from "src/proxy/types";
+import { DEFAULT_COUNTRY, ProxyType } from "src/proxy/types";
 import { CrawlerJobService } from "src/session/crawler.job.service";
 import { userAgent } from "src/shared/constants";
 import { CrawlerCommand } from "src/shared/types/CrawlerCommand";
@@ -85,8 +85,11 @@ export class BookingService {
         if (retryCount < 2) {
           return await fetchBookingHotels(payload, agent, retryCount + 1);
         } else if (retryCount < 3) {
-          console.log(`retry count ${retryCount} falback to il proxy`);
-          agent = this.proxyService.getProxy("il", ProxyType.DATACENTER);
+          console.log(`falback to DEFAULT_COUNTRY ${DEFAULT_COUNTRY}`);
+          agent = this.proxyService.getProxy(
+            DEFAULT_COUNTRY,
+            ProxyType.DATACENTER
+          );
           return await fetchBookingHotels(payload, agent, retryCount + 1);
         }
         throw new BadRequestException("Pagination is null");

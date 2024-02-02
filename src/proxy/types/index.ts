@@ -3,3 +3,4 @@ export enum ProxyType {
   DATACENTER_PREMIUM = "datacenter_premium",
   RESIDENTIAL = "residential",
 }
+export const DEFAULT_COUNTRY = "il";
