@@ -3,6 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import fetch from "node-fetch";
 import { ProxyService } from "src/proxy/proxy.service";
+import { ProxyType } from "src/proxy/types";
 import { CrawlerJobService } from "src/session/crawler.job.service";
 import { userAgent } from "src/shared/constants";
 import { CrawlerCommand } from "src/shared/types/CrawlerCommand";
@@ -15,9 +16,6 @@ import {
 } from "./types/booking.hotel.response";
 import { commandMapper } from "./utils/commandMapper";
 import { dataMapping } from "./utils/dataMapping";
-import { sleep } from "src/shared/utils/sleep";
-import { Agent } from "https";
-import { ProxyType } from "src/proxy/types";
 
 @Injectable()
 export class BookingService {
@@ -84,7 +82,6 @@ export class BookingService {
       console.log("hotelResults", hotelResults.length);
       pagination = response?.searchQueries?.search?.pagination;
       if (!pagination) {
-        await sleep(500 * retryCount);
         if (retryCount < 2) {
           return await fetchBookingHotels(payload, agent, retryCount + 1);
         } else if (retryCount < 3) {
