@@ -1,4 +1,8 @@
-import { Injectable, OnModuleInit } from "@nestjs/common";
+import {
+  Injectable,
+  OnApplicationShutdown,
+  OnModuleInit,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import { BRIGHTDATA_URL } from "./constants";
@@ -7,11 +11,12 @@ import { DEFAULT_COUNTRY, ProxyType } from "./types";
 import { IpInfo } from "./types/ipInfo";
 
 @Injectable()
-export class ProxyService implements OnModuleInit {
+export class ProxyService implements OnModuleInit, OnApplicationShutdown {
   baseProxyUrl: string;
   proxyAuthPort: string;
   opsToken: string;
   zone: string;
+  ip: string | undefined;
 
   constructor(private readonly configService: ConfigService) {
     this.baseProxyUrl = this.configService.getOrThrow<string>("PROXY_URL");
@@ -20,9 +25,12 @@ export class ProxyService implements OnModuleInit {
     this.opsToken = this.configService.getOrThrow<string>("PROXY_OPS_TOKEN");
     this.zone = this.configService.getOrThrow<string>("PROXY_ZONE");
   }
+  onApplicationShutdown(signal?: string) {
+    this.addRemoveCurrentIPToWhitelist(this.zone, "DELETE");
+  }
 
   onModuleInit() {
-    this.addCurrentIPToWhitelist(this.zone);
+    this.addRemoveCurrentIPToWhitelist(this.zone, "POST");
   }
 
   getProxy(
@@ -39,37 +47,40 @@ export class ProxyService implements OnModuleInit {
   }
 
   private async getCurrentIP(): Promise<IpInfo> {
-    return fetch("http://lumtest.com/myip.json").then(
+    const result = await fetch("http://lumtest.com/myip.json").then(
       async (res) => (await res.json()) as IpInfo
     );
+    this.ip = result.ip;
+    return result;
   }
   /**
-   *
+   *  Add/Remove current IP to the proxy zone whitelist
    * @param zone proxy zone, can be skipped to affect all zones
    */
-  private async addCurrentIPToWhitelist(zone?: string): Promise<boolean> {
+  private async addRemoveCurrentIPToWhitelist(
+    zone: string,
+    method: "POST" | "DELETE"
+  ): Promise<boolean> {
     try {
-      const { ip } = await this.getCurrentIP();
-      console.log(`addCurrentIPToWhitelist zone ${zone} ip ${ip}`);
+      if (!this.ip) await this.getCurrentIP();
+      if (method === "POST") {
+        console.log(`addCurrentIPToWhitelist zone ${zone} ip ${this.ip}`);
+      } else {
+        console.log(`removeCurrentIPToWhitelist zone ${zone} ip ${this.ip}`);
+      }
       return await fetch(`${BRIGHTDATA_URL}/zone/whitelist`, {
-        method: "POST",
+        method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${this.opsToken}`,
         },
         body: JSON.stringify({
           zone,
-          ip,
+          ip: this.ip,
         }),
-      }).then((res) => {
-        if (res.ok) {
-          console.log("addCurrentIPToWhitelist success");
-          return res.ok;
-        }
-        throw new Error("addCurrentIPToWhitelist error");
-      });
+      }).then((res) => res.ok);
     } catch (error) {
-      console.error("addCurrentIPToWhitelist error", error);
+      console.error("addRemoveCurrentIPToWhitelist error", error);
       return false;
     }
   }
