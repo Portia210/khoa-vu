@@ -29,7 +29,7 @@ const createTravelorLink = (
   sessionId: string,
   orginalLink: string,
 ) => {
-  return `${orginalLink}&fid=?check_in=${dayjs(command?.checkInDate).format(
+  return `${orginalLink}?fid=&check_in=${dayjs(command?.checkInDate).format(
     'YYYY-MM-DD',
   )}&check_out=${dayjs(command?.checkOutDate).format('YYYY-MM-DD')}&guests=${
     command?.guests
