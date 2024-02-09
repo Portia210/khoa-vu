@@ -12,6 +12,7 @@ import { IpInfo } from "./types/ipInfo";
 
 @Injectable()
 export class ProxyService implements OnModuleInit, OnApplicationShutdown {
+  environment: string | undefined = process.env.NODE_ENV;
   baseProxyUrl: string;
   proxyAuthPort: string;
   opsToken: string;
@@ -19,6 +20,7 @@ export class ProxyService implements OnModuleInit, OnApplicationShutdown {
   ip: string | undefined;
 
   constructor(private readonly configService: ConfigService) {
+    this.environment = this.configService.get<string>("NODE_ENV");
     this.baseProxyUrl = this.configService.getOrThrow<string>("PROXY_URL");
     this.proxyAuthPort =
       this.configService.getOrThrow<string>("PROXY_AUTH_PORT");
@@ -26,10 +28,13 @@ export class ProxyService implements OnModuleInit, OnApplicationShutdown {
     this.zone = this.configService.getOrThrow<string>("PROXY_ZONE");
   }
   onApplicationShutdown(signal?: string) {
+    if (this.environment !== "production") return;
     this.addRemoveCurrentIPToWhitelist(this.zone, "DELETE");
   }
 
   onModuleInit() {
+    if (this.environment !== "production") return;
+    console.log("ProxyService initialized in", this.environment, "mode");
     this.addRemoveCurrentIPToWhitelist(this.zone, "POST");
   }
 

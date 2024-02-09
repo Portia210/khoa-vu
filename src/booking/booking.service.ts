@@ -75,6 +75,9 @@ export class BookingService {
       }).then(async (res) => {
         if (res.ok) return await res.json().then((res: any) => res.data);
         console.log("fetchBookingHotels error", res);
+        if (res?.body){
+          console.log("fetchBookingHotels error body", res.body);
+        }
         return [];
       });
       const results = response?.searchQueries?.search?.results || [];
