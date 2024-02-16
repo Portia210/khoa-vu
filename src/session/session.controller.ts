@@ -28,14 +28,20 @@ export class SessionController {
   ) {
     const sessionInput = SessionInputZSchema.parse(payload);
     let id = await this.sessionService.checkIfSessionExist(sessionInput);
-    const newSession = force || !id;
-    if (`${newSession}` == "true") {
-      console.log("Creating new session");
+
+    const createSession = async () => {
       const { _id, bookingCommand, travelorCommand } =
         await this.sessionService.createSession(sessionInput);
       this.bookingService.importHotels(bookingCommand);
       this.travelorService.importHotels(travelorCommand);
       id = _id;
+    };
+    if (!id) {
+      console.log("Creating new session");
+      await createSession();
+    } else if (force) {
+      console.log("Force creating new session");
+      await createSession();
     } else {
       res.set("x-session-existed", "true");
       console.log("Session existed returning...", id);
@@ -45,12 +51,10 @@ export class SessionController {
   }
 
   @Post("/compare/:id")
-  async compareHotels(
+  compareHotels(
     @Res({ passthrough: true }) res: Response,
     @Param("id") id: string
   ) {
-    const result = await this.sessionService.getSessionResult(id);
-    if (result.status === "FINISHED") res.set("x-session-existed", "true");
-    return result;
+    return this.sessionService.getSessionResult(id);
   }
 }

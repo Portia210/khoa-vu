@@ -37,5 +37,11 @@ export class SessionInput extends Document {
 
   @Prop({ type: Number })
   rooms: number;
+
+  @Prop()
+  createdAt?: Date;
+
+  @Prop()
+  updatedAt?: Date;
 }
 export const SessionInputSchema = SchemaFactory.createForClass(SessionInput);

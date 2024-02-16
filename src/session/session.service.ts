@@ -76,6 +76,9 @@ export class SessionService {
   async getSessionResult(id: string) {
     const sessionInput = await this.sessionInputModel.findById(id).exec();
     if (!sessionInput) throw new BadRequestException("Session not found");
+    const isExpired = dayjs(sessionInput.createdAt).isBefore(
+      dayjs().subtract(10, "minute")
+    );
 
     const { bookingJobId, travelorJobId } = sessionInput;
     const [bookingJob, travelorJob] = await Promise.all([
@@ -104,6 +107,7 @@ export class SessionService {
     return {
       ...analytics,
       status,
+      isExpired,
     };
   }
 
