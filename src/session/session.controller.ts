@@ -45,7 +45,12 @@ export class SessionController {
   }
 
   @Post("/compare/:id")
-  async compareHotels(@Param("id") id: string) {
-    return await this.sessionService.getSessionResult(id);
+  async compareHotels(
+    @Res({ passthrough: true }) res: Response,
+    @Param("id") id: string
+  ) {
+    const result = await this.sessionService.getSessionResult(id);
+    if (result.status === "FINISHED") res.set("x-session-existed", "true");
+    return result;
   }
 }
