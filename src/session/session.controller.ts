@@ -1,4 +1,6 @@
-import { Body, Controller, Param, Post } from "@nestjs/common";
+import { Body, Controller, Param, Post, Query, Res } from "@nestjs/common";
+import { Response } from "express";
+import { ZodPipe } from "src/auth/pipe/zod.pipe";
 import { BookingService } from "src/booking/booking.service";
 import {
   SessionInputDto,
@@ -6,7 +8,6 @@ import {
 } from "src/shared/types/SessionInput.dto";
 import { TravelorService } from "src/travelor/travelor.service";
 import { SessionService } from "./session.service";
-import { ZodPipe } from "src/auth/pipe/zod.pipe";
 
 @Controller({
   path: "session",
@@ -21,20 +22,25 @@ export class SessionController {
 
   @Post("/")
   async createSession(
+    @Res({ passthrough: true }) res: Response,
+    @Query("force") force = false,
     @Body(new ZodPipe(SessionInputZSchema)) payload: SessionInputDto
   ) {
     const sessionInput = SessionInputZSchema.parse(payload);
     let id = await this.sessionService.checkIfSessionExist(sessionInput);
-    if (!id) {
+    const newSession = force || !id;
+    if (`${newSession}` == "true") {
       console.log("Creating new session");
       const { _id, bookingCommand, travelorCommand } =
         await this.sessionService.createSession(sessionInput);
-      this.bookingService.importHotels(bookingCommand),
-      this.travelorService.importHotels(travelorCommand),
-        (id = _id);
+      this.bookingService.importHotels(bookingCommand);
+      this.travelorService.importHotels(travelorCommand);
+      id = _id;
     } else {
+      res.set("x-session-existed", "true");
       console.log("Session existed returning...", id);
     }
+
     return id;
   }
 

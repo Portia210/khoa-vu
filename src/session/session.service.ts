@@ -15,7 +15,6 @@ import { SessionInput } from "./schemas/session.input.schema";
 
 @Injectable()
 export class SessionService {
-
   constructor(
     @InjectModel(SessionInput.name)
     private readonly sessionInputModel: Model<SessionInput>,
@@ -67,12 +66,10 @@ export class SessionService {
   }
 
   async checkIfSessionExist(sessionInput: SessionInputDto): Promise<string> {
-    const session = await this.sessionInputModel
-      .findOne({
-        ...sessionInput,
-        createdAt: { $gt: dayjs().subtract(10, "minute").toDate() },
-      })
-      .exec();
+    const session = await this.sessionInputModel.findOne({
+      ...sessionInput,
+      createdAt: { $gt: dayjs().subtract(10, "minute").toDate() },
+    });
     return session?._id || null;
   }
 
@@ -111,33 +108,36 @@ export class SessionService {
   }
 
   async cleanUp(): Promise<number> {
-    return (await this.connection.startSession()).withTransaction(async (session) => {
-      let totalRemoved = 0;
-      const oldSessions = await this.sessionInputModel
-        .find({
-          createdAt: { $lt: dayjs().subtract(10, "minute").toDate() },
-        })
-        .session(session);
+    return (await this.connection.startSession()).withTransaction(
+      async (session) => {
+        let totalRemoved = 0;
+        const oldSessions = await this.sessionInputModel
+          .find({
+            createdAt: { $lt: dayjs().subtract(10, "minute").toDate() },
+          })
+          .session(session);
 
-      if (!oldSessions.length) return totalRemoved;
+        if (!oldSessions.length) return totalRemoved;
 
-      await Promise.all(
-        oldSessions.map(async (oldSession) => {
-          const bookingDeleteResult = await this.bookingHotelModel.deleteMany(
-            { jobId: oldSession.bookingJobId },
-            { session }
-          );
-          const travelorDeleteResult = await this.travelorHotelModel.deleteMany(
-            { jobId: oldSession.travelorJobId },
-            { session }
-          );
-          totalRemoved +=
-            travelorDeleteResult.deletedCount +
-            bookingDeleteResult.deletedCount;
-        })
-      );
-      return totalRemoved;
-    });
+        await Promise.all(
+          oldSessions.map(async (oldSession) => {
+            const bookingDeleteResult = await this.bookingHotelModel.deleteMany(
+              { jobId: oldSession.bookingJobId },
+              { session }
+            );
+            const travelorDeleteResult =
+              await this.travelorHotelModel.deleteMany(
+                { jobId: oldSession.travelorJobId },
+                { session }
+              );
+            totalRemoved +=
+              travelorDeleteResult.deletedCount +
+              bookingDeleteResult.deletedCount;
+          })
+        );
+        return totalRemoved;
+      }
+    );
   }
 
   @Cron(CronExpression.EVERY_10_MINUTES)
