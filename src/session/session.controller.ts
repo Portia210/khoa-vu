@@ -39,7 +39,7 @@ export class SessionController {
     if (!id) {
       console.log("Creating new session");
       await createSession();
-    } else if (force) {
+    } else if (String(force) === "true") {
       console.log("Force creating new session");
       await createSession();
     } else {
