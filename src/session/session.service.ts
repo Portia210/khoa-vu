@@ -10,9 +10,11 @@ import { SessionInputDto } from "src/shared/types/SessionInput.dto";
 import { TravelorHotel } from "src/travelor/schemas/travelor.schema";
 import { TravelorCrawlerService } from "src/travelor/travelor.crawler.service";
 import { BookingCrawlerService } from "../booking/booking.crawler.service";
+import { CRAWLER_CONFIG } from "./config";
 import { CrawlerJob } from "./schemas/crawler.job.schema";
 import { SessionInput } from "./schemas/session.input.schema";
 
+const { VALUE, UNIT } = CRAWLER_CONFIG.CACHE_TIME;
 @Injectable()
 export class SessionService {
   constructor(
@@ -68,7 +70,9 @@ export class SessionService {
   async checkIfSessionExist(sessionInput: SessionInputDto): Promise<string> {
     const session = await this.sessionInputModel.findOne({
       ...sessionInput,
-      createdAt: { $gt: dayjs().subtract(10, "minute").toDate() },
+      createdAt: {
+        $gt: dayjs().subtract(VALUE, UNIT).toDate(),
+      },
     });
     return session?._id || null;
   }
@@ -77,7 +81,7 @@ export class SessionService {
     const sessionInput = await this.sessionInputModel.findById(id).exec();
     if (!sessionInput) throw new BadRequestException("Session not found");
     const isExpired = dayjs(sessionInput.createdAt).isBefore(
-      dayjs().subtract(10, "minute")
+      dayjs().subtract(VALUE, UNIT)
     );
 
     const { bookingJobId, travelorJobId } = sessionInput;
@@ -117,7 +121,7 @@ export class SessionService {
         let totalRemoved = 0;
         const oldSessions = await this.sessionInputModel
           .find({
-            createdAt: { $lt: dayjs().subtract(10, "minute").toDate() },
+            createdAt: { $lt: dayjs().subtract(VALUE, UNIT).toDate() },
           })
           .session(session);
 
