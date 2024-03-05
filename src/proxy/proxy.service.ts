@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   OnApplicationShutdown,
   OnModuleInit,
 } from "@nestjs/common";
@@ -19,6 +20,8 @@ export class ProxyService implements OnModuleInit, OnApplicationShutdown {
   zone: string;
   ip: string | undefined;
 
+  private readonly logger = new Logger(ProxyService.name);
+
   constructor(private readonly configService: ConfigService) {
     this.environment = this.configService.get<string>("NODE_ENV");
     this.baseProxyUrl = this.configService.getOrThrow<string>("PROXY_URL");
@@ -34,7 +37,7 @@ export class ProxyService implements OnModuleInit, OnApplicationShutdown {
 
   onModuleInit() {
     if (this.environment !== "production") return;
-    console.log("ProxyService initialized in", this.environment, "mode");
+    this.logger.log("ProxyService initialized in", this.environment, "mode");
     this.addRemoveCurrentIPToWhitelist(this.zone, "POST");
   }
 
@@ -69,9 +72,11 @@ export class ProxyService implements OnModuleInit, OnApplicationShutdown {
     try {
       if (!this.ip) await this.getCurrentIP();
       if (method === "POST") {
-        console.log(`addCurrentIPToWhitelist zone ${zone} ip ${this.ip}`);
+        this.logger.log(`addCurrentIPToWhitelist zone ${zone} ip ${this.ip}`);
       } else {
-        console.log(`removeCurrentIPToWhitelist zone ${zone} ip ${this.ip}`);
+        this.logger.log(
+          `removeCurrentIPToWhitelist zone ${zone} ip ${this.ip}`
+        );
       }
       return await fetch(`${BRIGHTDATA_URL}/zone/whitelist`, {
         method,
@@ -85,7 +90,7 @@ export class ProxyService implements OnModuleInit, OnApplicationShutdown {
         }),
       }).then((res) => res.ok);
     } catch (error) {
-      console.error("addRemoveCurrentIPToWhitelist error", error);
+      this.logger.error("addRemoveCurrentIPToWhitelist error", error);
       return false;
     }
   }

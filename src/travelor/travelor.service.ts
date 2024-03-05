@@ -1,6 +1,15 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { cloneDeep } from "lodash";
+import { Model } from "mongoose";
+import fetch from "node-fetch";
+import { ProxyService } from "src/proxy/proxy.service";
+import { CRAWLER_STATUS } from "src/session/constants";
+import { CrawlerJobService } from "src/session/crawler.job.service";
+import { userAgent } from "src/shared/constants";
 import { CrawlerCommand } from "src/shared/types/CrawlerCommand";
 import { sleep } from "src/shared/utils/sleep";
+import { TravelorHotel as TravelorHotelModel } from "src/travelor/schemas/travelor.schema";
 import { TRAVELOR_API, TRAVERLOR_CONFIG } from "./constants";
 import {
   TravelorHotelData,
@@ -9,17 +18,11 @@ import {
 } from "./types";
 import { commandMapper } from "./utils/commandMapper";
 import { dataMapping } from "./utils/dataMapping";
-import fetch from "node-fetch";
-import { userAgent } from "src/shared/constants";
-import { ProxyService } from "src/proxy/proxy.service";
-import { CrawlerJobService } from "src/session/crawler.job.service";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { TravelorHotel as TravelorHotelModel } from "src/travelor/schemas/travelor.schema";
-import { cloneDeep } from "lodash";
 
 @Injectable()
 export class TravelorService {
+  private readonly logger = new Logger(TravelorService.name);
+
   constructor(
     private readonly proxyService: ProxyService,
     private readonly crawlerJobService: CrawlerJobService,
@@ -28,11 +31,11 @@ export class TravelorService {
   ) {}
 
   async importHotels(command: CrawlerCommand) {
-    console.log("importHotels travelor", command);
+    this.logger.log("importHotels travelor", command);
     try {
       const canContinue = await this.crawlerJobService.updateJobStatus(
         command,
-        "RUNNING"
+        CRAWLER_STATUS.RUNNING
       );
       if (!canContinue) return;
       const commandMapped = commandMapper(command);
@@ -43,8 +46,12 @@ export class TravelorService {
       await this.getTravelorHotels(command, sessionId);
       await this.onFinish(command);
     } catch (error) {
-      console.error("error on importHotels", error);
-      await this.crawlerJobService.updateJobStatus(command, "FAILED", error);
+      this.logger.error("error on importHotels", error);
+      await this.crawlerJobService.updateJobStatus(
+        command,
+        CRAWLER_STATUS.FAILED,
+        error
+      );
     }
   }
   private async syncData(
@@ -84,7 +91,7 @@ export class TravelorService {
       body: JSON.stringify(payload),
     }).then(async (res) => {
       if (res.ok) return await res.json();
-      console.log("getSession error", res);
+      this.logger.log("getSession error", res);
     });
     return response.session;
   }
@@ -121,7 +128,7 @@ export class TravelorService {
       take: totalResults.toString(),
       locale: "en",
     });
-    console.log("status", { totalResults, status });
+    this.logger.log("status", { totalResults, status });
     if (stop) return;
     if (status === "running") {
       await sleep(2000);
@@ -162,6 +169,9 @@ export class TravelorService {
   }
 
   private async onFinish(command: any) {
-    await this.crawlerJobService.updateJobStatus(command, "FINISHED");
+    await this.crawlerJobService.updateJobStatus(
+      command,
+      CRAWLER_STATUS.FINISHED
+    );
   }
 }

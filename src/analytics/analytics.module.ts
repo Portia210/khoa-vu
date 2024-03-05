@@ -4,6 +4,7 @@ import {
   BookingHotel,
   BookingHotelSchema,
 } from "src/booking/schemas/booking.hotel.schema";
+import { TravelorHotel, TravelorHotelSchema } from "src/travelor/schemas/travelor.schema";
 import { AnalyticsController } from "./analytics.controller";
 import { AnalyticsService } from "./analytics.service";
 
@@ -11,6 +12,7 @@ import { AnalyticsService } from "./analytics.service";
   imports: [
     MongooseModule.forFeature([
       { name: BookingHotel.name, schema: BookingHotelSchema },
+      { name: TravelorHotel.name, schema: TravelorHotelSchema },
     ]),
   ],
   controllers: [AnalyticsController],

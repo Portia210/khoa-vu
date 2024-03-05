@@ -4,8 +4,8 @@ import mongoose, { Model } from "mongoose";
 import {
   CrawlerCommand,
   CrawlerCommandZSchema,
-  CrawlerStatus,
 } from "src/shared/types/CrawlerCommand";
+import { CRAWLER_STATUS } from "./constants";
 import { CrawlerJob } from "./schemas/crawler.job.schema";
 
 @Injectable()
@@ -18,7 +18,7 @@ export class CrawlerJobService {
 
   async updateJobStatus(
     job: CrawlerCommand,
-    status: CrawlerStatus = "RUNNING",
+    status: CRAWLER_STATUS = CRAWLER_STATUS.RUNNING,
     message?: string
   ) {
     const session = await this.connection.startSession();
