@@ -1,6 +1,15 @@
 import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { cloneDeep } from "lodash";
+import { Model } from "mongoose";
+import fetch from "node-fetch";
+import { ProxyService } from "src/proxy/proxy.service";
+import { CRAWLER_STATUS } from "src/session/constants";
+import { CrawlerJobService } from "src/session/crawler.job.service";
+import { userAgent } from "src/shared/constants";
 import { CrawlerCommand } from "src/shared/types/CrawlerCommand";
 import { sleep } from "src/shared/utils/sleep";
+import { TravelorHotel as TravelorHotelModel } from "src/travelor/schemas/travelor.schema";
 import { TRAVELOR_API, TRAVERLOR_CONFIG } from "./constants";
 import {
   TravelorHotelData,
@@ -9,14 +18,6 @@ import {
 } from "./types";
 import { commandMapper } from "./utils/commandMapper";
 import { dataMapping } from "./utils/dataMapping";
-import fetch from "node-fetch";
-import { userAgent } from "src/shared/constants";
-import { ProxyService } from "src/proxy/proxy.service";
-import { CrawlerJobService } from "src/session/crawler.job.service";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { TravelorHotel as TravelorHotelModel } from "src/travelor/schemas/travelor.schema";
-import { cloneDeep } from "lodash";
 
 @Injectable()
 export class TravelorService {
@@ -32,7 +33,7 @@ export class TravelorService {
     try {
       const canContinue = await this.crawlerJobService.updateJobStatus(
         command,
-        "RUNNING"
+        CRAWLER_STATUS.RUNNING
       );
       if (!canContinue) return;
       const commandMapped = commandMapper(command);
@@ -44,7 +45,11 @@ export class TravelorService {
       await this.onFinish(command);
     } catch (error) {
       console.error("error on importHotels", error);
-      await this.crawlerJobService.updateJobStatus(command, "FAILED", error);
+      await this.crawlerJobService.updateJobStatus(
+        command,
+        CRAWLER_STATUS.FAILED,
+        error
+      );
     }
   }
   private async syncData(
@@ -162,6 +167,9 @@ export class TravelorService {
   }
 
   private async onFinish(command: any) {
-    await this.crawlerJobService.updateJobStatus(command, "FINISHED");
+    await this.crawlerJobService.updateJobStatus(
+      command,
+      CRAWLER_STATUS.FINISHED
+    );
   }
 }

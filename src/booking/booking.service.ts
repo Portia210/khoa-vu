@@ -16,6 +16,7 @@ import {
 } from "./types/booking.hotel.response";
 import { commandMapper } from "./utils/commandMapper";
 import { dataMapping } from "./utils/dataMapping";
+import { CRAWLER_STATUS } from "src/session/constants";
 
 @Injectable()
 export class BookingService {
@@ -31,7 +32,7 @@ export class BookingService {
     try {
       const canContinue = await this.crawlerJobService.updateJobStatus(
         command,
-        "RUNNING"
+        CRAWLER_STATUS.RUNNING
       );
       if (!canContinue) return;
       const commandMapped = commandMapper(command);
@@ -41,7 +42,7 @@ export class BookingService {
       console.error("error on importHotels", error);
       await this.crawlerJobService.updateJobStatus(
         command,
-        "FAILED",
+        CRAWLER_STATUS.FAILED,
         JSON.stringify(error)
       );
     }
@@ -75,7 +76,7 @@ export class BookingService {
       }).then(async (res) => {
         if (res.ok) return await res.json().then((res: any) => res.data);
         console.log("fetchBookingHotels error", res);
-        if (res?.body){
+        if (res?.body) {
           console.log("fetchBookingHotels error body", res.body);
         }
         return [];
@@ -129,6 +130,9 @@ export class BookingService {
   }
 
   private async onFinish(command: CrawlerCommand) {
-    await this.crawlerJobService.updateJobStatus(command, "FINISHED");
+    await this.crawlerJobService.updateJobStatus(
+      command,
+      CRAWLER_STATUS.FINISHED
+    );
   }
 }

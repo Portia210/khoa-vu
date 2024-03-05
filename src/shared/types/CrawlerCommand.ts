@@ -24,4 +24,3 @@ export const CrawlerCommandZSchema = z.object({
 });
 
 export type CrawlerCommand = z.infer<typeof CrawlerCommandZSchema>;
-export type CrawlerStatus = "PENDING" | "RUNNING" | "FINISHED" | "FAILED";

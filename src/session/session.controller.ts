@@ -57,4 +57,12 @@ export class SessionController {
   ) {
     return this.sessionService.getSessionResult(id);
   }
+
+  @Post("/full-results/:id")
+  getFullSessionResult(
+    @Res({ passthrough: true }) res: Response,
+    @Param("id") id: string
+  ) {
+    return this.sessionService.getFullSessionResult(id);
+  }
 }
