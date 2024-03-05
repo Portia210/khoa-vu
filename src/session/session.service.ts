@@ -95,7 +95,7 @@ export class SessionService {
     if (!bookingJob || !travelorJob)
       throw new BadRequestException("Job not found");
 
-    let status = CRAWLER_STATUS.RUNNING.valueOf()
+    let status = CRAWLER_STATUS.RUNNING.valueOf();
     if (
       bookingJob.status === CRAWLER_STATUS.FINISHED.valueOf() &&
       travelorJob.status === CRAWLER_STATUS.FINISHED.valueOf()
@@ -105,7 +105,7 @@ export class SessionService {
       bookingJob.status === CRAWLER_STATUS.FAILED.valueOf() ||
       travelorJob.status === CRAWLER_STATUS.FAILED.valueOf()
     ) {
-      status = CRAWLER_STATUS.FAILED.valueOf()
+      status = CRAWLER_STATUS.FAILED.valueOf();
     }
 
     const analytics = await this.analyticsService.compare(
@@ -137,7 +137,40 @@ export class SessionService {
     };
   }
 
-  async getFullSessionResult(id: string) {}
+  /**
+   * Get full travelor hotel result
+   * @param id sessionid
+   * @returns
+   */
+  async getFullTravelorResult(id: string) {
+    const sessionInput = await this.getSessionInput(id);
+    if (!sessionInput) throw new BadRequestException("Session not found");
+    const isExpired = dayjs(sessionInput.createdAt).isBefore(
+      dayjs().subtract(VALUE, UNIT)
+    );
+    let status = CRAWLER_STATUS.RUNNING.valueOf();
+
+    const travelorJob = await this.crawlerJobModel
+      .findById(sessionInput.travelorJobId)
+      .exec();
+    if (!travelorJob) throw new BadRequestException("Job not found");
+
+    if (travelorJob.status === CRAWLER_STATUS.FINISHED.valueOf()) {
+      status = travelorJob.status;
+    } else if (travelorJob.status === CRAWLER_STATUS.FAILED.valueOf()) {
+      status = CRAWLER_STATUS.FAILED.valueOf();
+    }
+
+    const results = await this.analyticsService.getTravelorHotels(
+      sessionInput.travelorJobId
+    );
+
+    return {
+      ...results,
+      status,
+      isExpired,
+    };
+  }
 
   async cleanUp(): Promise<number> {
     return (await this.connection.startSession()).withTransaction(

@@ -52,17 +52,15 @@ export class SessionController {
 
   @Post("/compare/:id")
   compareHotels(
-    @Res({ passthrough: true }) res: Response,
     @Param("id") id: string
   ) {
     return this.sessionService.getSessionResult(id);
   }
 
-  @Post("/full-results/:id")
-  getFullSessionResult(
-    @Res({ passthrough: true }) res: Response,
+  @Post("/travelor-results/:id")
+  getFullTravelorResult(
     @Param("id") id: string
   ) {
-    return this.sessionService.getFullSessionResult(id);
+    return this.sessionService.getFullTravelorResult(id);
   }
 }

@@ -56,3 +56,36 @@ export const filters = (bookingJobId: string, travelorJobId: string) => [
     },
   },
 ];
+
+export const filterAllTravelorHotel = (travelorJobId: string) => [
+  {
+    $match: {
+      jobId: travelorJobId,
+      createdAt: { $gte: dayjs().subtract(1, "day").toDate() },
+    },
+  },
+  {
+    $group: {
+      _id: "$title",
+      title: { $first: "$title" },
+      stars: { $first: "$stars" },
+      rate: { $first: "$reviews.rating" },
+      picture_link: { $first: "$picture_link" },
+      travelorPrice: { $min: "$price.amount" },
+      travelorCurrency: { $first: "$price.currency" },
+      travelorLink: { $first: "$travelor_link" },
+    },
+  },
+  {
+    $project: {
+      _id: 0,
+      title: 1,
+      stars: 1,
+      rate: 1,
+      picture_link: 1,
+      travelorPrice: 1,
+      travelorCurrency: 1,
+      travelorLink: 1,
+    },
+  },
+];
