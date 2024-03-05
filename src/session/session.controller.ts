@@ -1,4 +1,12 @@
-import { Body, Controller, Param, Post, Query, Res } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Logger,
+  Param,
+  Post,
+  Query,
+  Res,
+} from "@nestjs/common";
 import { Response } from "express";
 import { ZodPipe } from "src/auth/pipe/zod.pipe";
 import { BookingService } from "src/booking/booking.service";
@@ -14,6 +22,8 @@ import { SessionService } from "./session.service";
   version: "1",
 })
 export class SessionController {
+  private readonly logger = new Logger(SessionController.name);
+
   constructor(
     private readonly sessionService: SessionService,
     private readonly bookingService: BookingService,
@@ -37,30 +47,26 @@ export class SessionController {
       id = _id;
     };
     if (!id) {
-      console.log("Creating new session");
+      this.logger.log("Creating new session");
       await createSession();
     } else if (String(force) === "true") {
-      console.log("Force creating new session");
+      this.logger.log("Force creating new session");
       await createSession();
     } else {
       res.set("x-session-existed", "true");
-      console.log("Session existed returning...", id);
+      this.logger.log("Session existed returning...", id);
     }
 
     return id;
   }
 
   @Post("/compare/:id")
-  compareHotels(
-    @Param("id") id: string
-  ) {
+  compareHotels(@Param("id") id: string) {
     return this.sessionService.getSessionResult(id);
   }
 
   @Post("/travelor-results/:id")
-  getFullTravelorResult(
-    @Param("id") id: string
-  ) {
+  getFullTravelorResult(@Param("id") id: string) {
     return this.sessionService.getFullTravelorResult(id);
   }
 }

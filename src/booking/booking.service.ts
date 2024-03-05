@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import fetch from "node-fetch";
@@ -20,6 +20,8 @@ import { CRAWLER_STATUS } from "src/session/constants";
 
 @Injectable()
 export class BookingService {
+  private readonly logger = new Logger(BookingService.name);
+
   constructor(
     private readonly proxyService: ProxyService,
     private readonly crawlerJobService: CrawlerJobService,
@@ -28,7 +30,7 @@ export class BookingService {
   ) {}
 
   async importHotels(command: CrawlerCommand): Promise<any> {
-    console.log("importHotels booking", command);
+    this.logger.log("importHotels booking", command);
     try {
       const canContinue = await this.crawlerJobService.updateJobStatus(
         command,
@@ -39,7 +41,7 @@ export class BookingService {
       await this.getBookingHotels(command, commandMapped);
       await this.onFinish(command);
     } catch (error) {
-      console.error("error on importHotels", error);
+      this.logger.error("error on importHotels", error);
       await this.crawlerJobService.updateJobStatus(
         command,
         CRAWLER_STATUS.FAILED,
@@ -75,21 +77,21 @@ export class BookingService {
         },
       }).then(async (res) => {
         if (res.ok) return await res.json().then((res: any) => res.data);
-        console.log("fetchBookingHotels error", res);
+        this.logger.log("fetchBookingHotels error", res);
         if (res?.body) {
-          console.log("fetchBookingHotels error body", res.body);
+          this.logger.log("fetchBookingHotels error body", res.body);
         }
         return [];
       });
       const results = response?.searchQueries?.search?.results || [];
       const hotelResults = results.flat();
-      console.log("hotelResults", hotelResults.length);
+      this.logger.log("hotelResults", hotelResults.length);
       pagination = response?.searchQueries?.search?.pagination;
       if (!pagination) {
         if (retryCount < 2) {
           return await fetchBookingHotels(payload, agent, retryCount + 1);
         } else if (retryCount < 3) {
-          console.log(`falback to DEFAULT_COUNTRY ${DEFAULT_COUNTRY}`);
+          this.logger.log(`falback to DEFAULT_COUNTRY ${DEFAULT_COUNTRY}`);
           agent = this.proxyService.getProxy(
             DEFAULT_COUNTRY,
             ProxyType.DATACENTER

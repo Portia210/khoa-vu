@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { cloneDeep } from "lodash";
 import { Model } from "mongoose";
@@ -21,6 +21,8 @@ import { dataMapping } from "./utils/dataMapping";
 
 @Injectable()
 export class TravelorService {
+  private readonly logger = new Logger(TravelorService.name);
+
   constructor(
     private readonly proxyService: ProxyService,
     private readonly crawlerJobService: CrawlerJobService,
@@ -29,7 +31,7 @@ export class TravelorService {
   ) {}
 
   async importHotels(command: CrawlerCommand) {
-    console.log("importHotels travelor", command);
+    this.logger.log("importHotels travelor", command);
     try {
       const canContinue = await this.crawlerJobService.updateJobStatus(
         command,
@@ -44,7 +46,7 @@ export class TravelorService {
       await this.getTravelorHotels(command, sessionId);
       await this.onFinish(command);
     } catch (error) {
-      console.error("error on importHotels", error);
+      this.logger.error("error on importHotels", error);
       await this.crawlerJobService.updateJobStatus(
         command,
         CRAWLER_STATUS.FAILED,
@@ -89,7 +91,7 @@ export class TravelorService {
       body: JSON.stringify(payload),
     }).then(async (res) => {
       if (res.ok) return await res.json();
-      console.log("getSession error", res);
+      this.logger.log("getSession error", res);
     });
     return response.session;
   }
@@ -126,7 +128,7 @@ export class TravelorService {
       take: totalResults.toString(),
       locale: "en",
     });
-    console.log("status", { totalResults, status });
+    this.logger.log("status", { totalResults, status });
     if (stop) return;
     if (status === "running") {
       await sleep(2000);
