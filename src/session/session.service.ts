@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from "@nestjs/common";
 import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import dayjs from "dayjs";
@@ -148,28 +153,41 @@ export class SessionService {
     const isExpired = dayjs(sessionInput.createdAt).isBefore(
       dayjs().subtract(VALUE, UNIT)
     );
-    let status = CRAWLER_STATUS.RUNNING.valueOf();
-
     const travelorJob = await this.crawlerJobModel
       .findById(sessionInput.travelorJobId)
       .exec();
     if (!travelorJob) throw new BadRequestException("Job not found");
+    try {
+      let status = CRAWLER_STATUS.RUNNING.valueOf();
+      if (travelorJob.status === CRAWLER_STATUS.FINISHED.valueOf()) {
+        status = travelorJob.status;
+      } else if (travelorJob.status === CRAWLER_STATUS.FAILED.valueOf()) {
+        status = CRAWLER_STATUS.FAILED.valueOf();
+      }
 
-    if (travelorJob.status === CRAWLER_STATUS.FINISHED.valueOf()) {
-      status = travelorJob.status;
-    } else if (travelorJob.status === CRAWLER_STATUS.FAILED.valueOf()) {
-      status = CRAWLER_STATUS.FAILED.valueOf();
+      const travelorHotels = await this.analyticsService.getTravelorHotels(
+        sessionInput.travelorJobId
+      );
+      const { results: matchesResults } = await this.getJobsResult(
+        sessionInput.bookingJobId,
+        sessionInput.travelorJobId
+      );
+
+      const uniqueHotels = travelorHotels.results.filter((hotel) => {
+        return !matchesResults.some(
+          (match) => match.travelorLink === hotel.travelorLink
+        );
+      });
+
+      return Object.assign({}, travelorHotels, {
+        status,
+        isExpired,
+        results: uniqueHotels,
+      });
+    } catch (error) {
+      this.logger.error("Error:", error);
+      throw new InternalServerErrorException("Internal Server Error");
     }
-
-    const results = await this.analyticsService.getTravelorHotels(
-      sessionInput.travelorJobId
-    );
-
-    return {
-      ...results,
-      status,
-      isExpired,
-    };
   }
 
   async cleanUp(): Promise<number> {
