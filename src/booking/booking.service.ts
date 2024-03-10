@@ -4,6 +4,7 @@ import { Model } from "mongoose";
 import fetch from "node-fetch";
 import { ProxyService } from "src/proxy/proxy.service";
 import { DEFAULT_COUNTRY, ProxyType } from "src/proxy/types";
+import { CRAWLER_STATUS } from "src/session/constants";
 import { CrawlerJobService } from "src/session/crawler.job.service";
 import { userAgent } from "src/shared/constants";
 import { CrawlerCommand } from "src/shared/types/CrawlerCommand";
@@ -16,7 +17,6 @@ import {
 } from "./types/booking.hotel.response";
 import { commandMapper } from "./utils/commandMapper";
 import { dataMapping } from "./utils/dataMapping";
-import { CRAWLER_STATUS } from "src/session/constants";
 
 @Injectable()
 export class BookingService {
@@ -77,10 +77,11 @@ export class BookingService {
         },
       }).then(async (res) => {
         if (res.ok) return await res.json().then((res: any) => res.data);
-        this.logger.log("fetchBookingHotels error", res);
-        if (res?.body) {
-          this.logger.log("fetchBookingHotels error body", res.body);
-        }
+        this.logger.error("fetchBookingHotels error", {
+          status: res.status,
+          statusText: res.statusText,
+          url: res.url,
+        });
         return [];
       });
       const results = response?.searchQueries?.search?.results || [];
