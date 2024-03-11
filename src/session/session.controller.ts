@@ -36,9 +36,6 @@ export class SessionController {
     this.logger.log(
       `Creating new session payload ${JSON.stringify(sessionInput)} force: ${force}`
     );
-    this.logger.log(
-      `Checking if session exist... ${JSON.stringify(sessionInput)}`
-    );
     let id = await this.sessionService.checkIfSessionExist(sessionInput);
     if (id) this.logger.log("Session existed returning...", id);
 

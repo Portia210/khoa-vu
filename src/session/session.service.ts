@@ -41,37 +41,46 @@ export class SessionService {
   ) {}
 
   async createSession(sessionInput: SessionInputDto) {
-    const mongooseSession = await this.connection.startSession();
-    mongooseSession.startTransaction();
-
     try {
-      const jobIds = await Promise.all([
-        this.bookingCrawlerService.createCommand(sessionInput, mongooseSession),
-        this.travelorCrawlerService.createCommand(
-          sessionInput,
-          mongooseSession
-        ),
-      ]);
-      let data: any = cloneDeep(sessionInput);
-      data.bookingJobId = jobIds[0]._id;
-      data.travelorJobId = jobIds[1]._id;
+      this.logger.log(
+        `Creating new session payload ${JSON.stringify(sessionInput)}`
+      );
+      let response = null;
+      await this.connection.transaction(async (mongooseSession) => {
+        this.logger.log(`Creating commands ${JSON.stringify(sessionInput)}`);
+        const jobIds = await Promise.all([
+          this.bookingCrawlerService.createCommand(
+            sessionInput,
+            mongooseSession
+          ),
+          this.travelorCrawlerService.createCommand(
+            sessionInput,
+            mongooseSession
+          ),
+        ]);
+        this.logger.log("Creating session");
+        let data: any = cloneDeep(sessionInput);
+        data.bookingJobId = jobIds[0]._id;
+        data.travelorJobId = jobIds[1]._id;
 
-      const sessionInputSearch = new this.sessionInputModel(data);
-      const result = await sessionInputSearch.save({
-        session: mongooseSession,
+        const sessionInputSearch = new this.sessionInputModel(data);
+        const result = await sessionInputSearch.save({
+          session: mongooseSession,
+        });
+
+        await mongooseSession.commitTransaction();
+        this.logger.log("Session created", result._id);
+        response = {
+          _id: result._id,
+          bookingCommand: jobIds[0],
+          travelorCommand: jobIds[1],
+        };
       });
-
-      await mongooseSession.commitTransaction();
-
-      return {
-        _id: result._id,
-        bookingCommand: jobIds[0],
-        travelorCommand: jobIds[1],
-      };
+      return response;
     } catch (err) {
+      console.error(`error on createSession: ${err}`);
       this.logger.error("createSession", err);
-      await mongooseSession.abortTransaction();
-      throw err;
+      throw new BadRequestException(`Error on createSession`);
     }
   }
 
