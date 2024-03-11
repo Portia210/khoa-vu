@@ -21,8 +21,6 @@ export class CrawlerJobService {
     status: CRAWLER_STATUS = CRAWLER_STATUS.RUNNING,
     message?: string
   ) {
-    const session = await this.connection.startSession();
-    session.startTransaction();
     try {
       let payload = {
         ...job,
@@ -35,12 +33,10 @@ export class CrawlerJobService {
       const crawlerJob = await this.crawlerJobModel.findById(id);
       if (!crawlerJob) throw new BadRequestException("Job not found");
       await this.crawlerJobModel
-        .findByIdAndUpdate(id.toString(), command, { session })
+        .findByIdAndUpdate(id.toString(), command)
         .exec();
-      await session.commitTransaction();
       return true;
     } catch (err: any) {
-      await session.abortTransaction();
       throw new BadRequestException(err.message);
     }
   }

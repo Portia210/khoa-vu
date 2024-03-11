@@ -12,6 +12,9 @@ import { BookingService } from "./booking.service";
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
 
+  /**
+   * @deprecated This controller is not used anymore
+   */
   @Post("import-hotels")
   async importHotels(@Body() command: CrawlerCommand) {
     this.bookingService.importHotels(command);

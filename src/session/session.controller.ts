@@ -4,10 +4,8 @@ import {
   Logger,
   Param,
   Post,
-  Query,
-  Res,
+  Query
 } from "@nestjs/common";
-import { Response } from "express";
 import { ZodPipe } from "src/auth/pipe/zod.pipe";
 import { BookingService } from "src/booking/booking.service";
 import {
@@ -32,12 +30,17 @@ export class SessionController {
 
   @Post("/")
   async createSession(
-    @Res({ passthrough: true }) res: Response,
     @Query("force") force = false,
-    @Body(new ZodPipe(SessionInputZSchema)) payload: SessionInputDto
+    @Body(new ZodPipe(SessionInputZSchema)) sessionInput: SessionInputDto
   ) {
-    const sessionInput = SessionInputZSchema.parse(payload);
+    this.logger.log(
+      `Creating new session payload ${JSON.stringify(sessionInput)} force: ${force}`
+    );
+    this.logger.log(
+      `Checking if session exist... ${JSON.stringify(sessionInput)}`
+    );
     let id = await this.sessionService.checkIfSessionExist(sessionInput);
+    if (id) this.logger.log("Session existed returning...", id);
 
     const createSession = async () => {
       const { _id, bookingCommand, travelorCommand } =
@@ -53,7 +56,6 @@ export class SessionController {
       this.logger.log("Force creating new session");
       await createSession();
     } else {
-      res.set("x-session-existed", "true");
       this.logger.log("Session existed returning...", id);
     }
 
