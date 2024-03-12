@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Logger,
-  Param,
-  Post,
-  Query
-} from "@nestjs/common";
+import { Body, Controller, Logger, Param, Post, Query } from "@nestjs/common";
 import { ZodPipe } from "src/auth/pipe/zod.pipe";
 import { BookingService } from "src/booking/booking.service";
 import {
@@ -30,16 +23,18 @@ export class SessionController {
 
   @Post("/")
   async createSession(
-    @Query("force") force = false,
-    @Body(new ZodPipe(SessionInputZSchema)) sessionInput: SessionInputDto
+    @Body(new ZodPipe(SessionInputZSchema)) sessionInput: SessionInputDto,
+    @Query("force") force = false
   ) {
     this.logger.log(
-      `Creating new session payload ${JSON.stringify(sessionInput)} force: ${force}`
+      `Creating new session payload ${JSON.stringify(
+        sessionInput
+      )} force: ${force}`
     );
     let id = await this.sessionService.checkIfSessionExist(sessionInput);
     if (id) this.logger.log("Session existed returning...", id);
 
-    const createSession = async () => {
+    const newSession = async () => {
       const { _id, bookingCommand, travelorCommand } =
         await this.sessionService.createSession(sessionInput);
       this.bookingService.importHotels(bookingCommand);
@@ -48,10 +43,10 @@ export class SessionController {
     };
     if (!id) {
       this.logger.log("Creating new session");
-      await createSession();
+      await newSession();
     } else if (String(force) === "true") {
       this.logger.log("Force creating new session");
-      await createSession();
+      await newSession();
     } else {
       this.logger.log("Session existed returning...", id);
     }
