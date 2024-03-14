@@ -106,7 +106,7 @@ export class TravelorService {
       params = new URLSearchParams({
         sort_by: "distance",
         sort: "asc",
-        currency: "USD",
+        currency: "ILS",
         skip: "0",
         take: "48",
         locale: "en",
@@ -123,7 +123,7 @@ export class TravelorService {
     params = new URLSearchParams({
       sort_by: "distance",
       sort: "asc",
-      currency: "USD",
+      currency: "ILS",
       skip: "0",
       take: totalResults.toString(),
       locale: "en",

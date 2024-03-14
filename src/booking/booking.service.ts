@@ -63,7 +63,7 @@ export class BookingService {
       agent: any,
       retryCount = 0
     ) => {
-      const url = `${BOOKING_API.GRAPHQL}?selected_currency=USD`;
+      const url = `${BOOKING_API.GRAPHQL}?selected_currency=ILS`;
       const response: BookingHotelResponse = await fetch(url, {
         method: "POST",
         body: JSON.stringify(payload),

@@ -19,7 +19,7 @@ export class AnalyticsService {
   async analytics(
     bookingJobId: string,
     travelorJobId: string,
-    currency: string = "USD"
+    currency: string = "ILS"
   ) {
     const { results } = await this.compare(bookingJobId, travelorJobId);
     const filterResults = filterCompareResults(results);
