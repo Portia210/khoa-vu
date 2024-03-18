@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import stringSimilarity from "string-similarity";
 
 export const filters = (bookingJobId: string, travelorJobId: string) => [
   {
@@ -89,3 +90,74 @@ export const filterAllTravelorHotel = (travelorJobId: string) => [
     },
   },
 ];
+
+function preprocessString(str: string) {
+  // Remove spaces and punctuation characters
+  return str.replace(/[^\w\s]/g, "").toLowerCase();
+}
+
+export const filterAllTravelorHotelV2 = (travelorJobId: string) => {
+  const threshold = 0.95;
+  return [
+    {
+      $match: {
+        jobId: travelorJobId,
+        createdAt: { $gte: dayjs().subtract(1, "day").toDate() },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        bookingHotelTitle: { $first: "$title" }, // Get the title of the booking hotel
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        bookingHotelTitle: 1,
+      },
+    },
+    {
+      $addFields: {
+        processedSearchString: { $toLower: "$bookingHotelTitle" }, // Preprocess the booking hotel title
+      },
+    },
+    {
+      $addFields: {
+        similarity: stringSimilarity.compareTwoStrings(
+          "$processedTitle",
+          "$processedSearchString"
+        ),
+      },
+    },
+    {
+      $match: {
+        similarity: { $gte: threshold }, // Filter based on similarity threshold
+      },
+    },
+    {
+      $group: {
+        _id: "$title",
+        title: { $first: "$title" },
+        stars: { $first: "$stars" },
+        rate: { $first: "$reviews.rating" },
+        picture_link: { $first: "$picture_link" },
+        travelorPrice: { $min: "$price.amount" },
+        travelorCurrency: { $first: "$price.currency" },
+        travelorLink: { $first: "$travelor_link" },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        title: 1,
+        stars: 1,
+        rate: 1,
+        picture_link: 1,
+        travelorPrice: 1,
+        travelorCurrency: 1,
+        travelorLink: 1,
+      },
+    },
+  ];
+};
