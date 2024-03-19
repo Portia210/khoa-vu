@@ -29,6 +29,9 @@ dependencies:
   '@types/lodash':
     specifier: ^4.14.202
     version: 4.14.202
+  '@types/string-similarity':
+    specifier: ^4.0.2
+    version: 4.0.2
   axios:
     specifier: ^1.6.7
     version: 1.6.7
@@ -53,6 +56,9 @@ dependencies:
   rxjs:
     specifier: ^7.8.1
     version: 7.8.1
+  string-similarity-js:
+    specifier: ^2.1.4
+    version: 2.1.4
   zod:
     specifier: ^3.22.4
     version: 3.22.4
@@ -1344,6 +1350,10 @@ packages:
   /@types/stack-utils@2.0.3:
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
     dev: true
+
+  /@types/string-similarity@4.0.2:
+    resolution: {integrity: sha512-LkJQ/jsXtCVMK+sKYAmX/8zEq+/46f1PTQw7YtmQwb74jemS1SlNLmARM2Zml9DgdDTWKAtc5L13WorpHPDjDA==}
+    dev: false
 
   /@types/superagent@8.1.1:
     resolution: {integrity: sha512-YQyEXA4PgCl7EVOoSAS3o0fyPFU6erv5mMixztQYe1bqbWmmn8c+IrqoxjQeZe4MgwXikgcaZPiI/DsbmOVlzA==}
@@ -4825,6 +4835,10 @@ packages:
       char-regex: 1.0.2
       strip-ansi: 6.0.1
     dev: true
+
+  /string-similarity-js@2.1.4:
+    resolution: {integrity: sha512-uApODZNjCHGYROzDSAdCmAHf60L/pMDHnP/yk6TAbvGg7JSPZlSto/ceCI7hZEqzc53/juU2aOJFkM2yUVTMTA==}
+    dev: false
 
   /string-width@4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
