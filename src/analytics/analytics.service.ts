@@ -93,4 +93,25 @@ export class AnalyticsService {
     );
     return results.filter(Boolean);
   }
+
+  async filterResultsV2(hotelResults: any[]): Promise<any[]> {
+    const results = await Promise.all(
+      hotelResults.map(async (result) => {
+        let { bookingCurrency, bookingPrice, travelorCurrency, travelorPrice } =
+          result;
+        const price_difference = Number(bookingPrice) - Number(travelorPrice);
+        // Filter travelor hotels has better price
+        if (price_difference < 0) return;
+        return {
+          ...result,
+          bookingCurrency,
+          travelorCurrency,
+          bookingPrice: Math.round(Number(bookingPrice)),
+          travelorPrice: Math.round(Number(travelorPrice)),
+          price_difference: Math.round(price_difference),
+        };
+      })
+    );
+    return results.filter(Boolean);
+  }
 }

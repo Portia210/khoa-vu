@@ -23,7 +23,7 @@ export class SessionServiceV2 {
   ) {}
 
   async getSessionResult(id: string) {
-    const miniumSimilarityScore = 0.95;
+    const miniumSimilarityScore = 0.96;
     try {
       const sessionInput = await this.sessionService.getSessionInput(id);
       const isExpired = dayjs(sessionInput.createdAt).isBefore(
@@ -34,14 +34,28 @@ export class SessionServiceV2 {
           sessionInput.bookingJobId,
           sessionInput.travelorJobId
         );
-      const results = this.calculateSimilarityScores(
+      let calcResult = await this.calculateSimilarityScores(
         bookingHotels,
         travelorHotels,
         miniumSimilarityScore
       );
 
+      const uniqueLinks = new Set();
+
+      const uniqueHotels = calcResult.results.filter((hotel) => {
+        if (!uniqueLinks.has(hotel.travelorLink)) {
+          uniqueLinks.add(hotel.travelorLink);
+          return true;
+        }
+        return false;
+      });
+      calcResult.results = await this.analyticsService.filterResultsV2(
+        uniqueHotels
+      );
+
       return {
-        results,
+        ...calcResult,
+        totalResults: calcResult?.results?.length || 0,
         status,
         isExpired,
       };
@@ -88,13 +102,23 @@ export class SessionServiceV2 {
       bookingHotels.forEach((bookingHotel) => {
         travelorHotels.forEach((travelorHotel) => {
           const similarityScore = stringSimilarity(
-            bookingHotel.title,
-            travelorHotel.title
+            bookingHotel?.title,
+            travelorHotel?.title
           );
-          if (similarityScore >= requiredScore) {
+          if (similarityScore > requiredScore && similarityScore < 1) {
             results.push({
               ...bookingHotel,
               ...travelorHotel,
+              bookingTitle: bookingHotel?.title,
+              travelorTitle: travelorHotel?.title,
+              similarityScore,
+            });
+          } else if (similarityScore >= requiredScore) {
+            results.push({
+              ...bookingHotel,
+              ...travelorHotel,
+              bookingTitle: bookingHotel?.title,
+              travelorTitle: travelorHotel?.title,
               similarityScore,
             });
           }
@@ -104,7 +128,6 @@ export class SessionServiceV2 {
 
     return {
       results,
-      totalResults: results.length,
     };
   }
 
