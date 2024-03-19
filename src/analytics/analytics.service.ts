@@ -4,7 +4,11 @@ import { Model } from "mongoose";
 import { BookingHotel } from "src/booking/schemas/booking.hotel.schema";
 import { TravelorHotel } from "src/travelor/schemas/travelor.schema";
 import { HotelAggregateResult } from "./types/types";
-import { filterAllTravelorHotel, filters } from "./utils/filers";
+import {
+  filterAllBookingHotel,
+  filterAllTravelorHotel,
+  filters,
+} from "./utils/filers";
 import { filterCompareResults } from "./utils/filterCompareResults";
 
 @Injectable()
@@ -48,6 +52,18 @@ export class AnalyticsService {
       .aggregate(filterAllTravelorHotel(travelorJobId))
       .sort({
         travelorPrice: -1,
+      });
+    return {
+      results: hotels,
+      totalResults: hotels.length,
+    };
+  }
+
+  async getBookingHotels(bookingJobId: string) {
+    const hotels = await this.bookingHotelModel
+      .aggregate(filterAllBookingHotel(bookingJobId))
+      .sort({
+        bookingPrice: -1,
       });
     return {
       results: hotels,

@@ -19,6 +19,8 @@ import {
 } from "./schemas/session.input.schema";
 import { SessionController } from "./session.controller";
 import { SessionService } from "./session.service";
+import { SessionControllerV2 } from "./v2/session.controller";
+import { SessionServiceV2 } from "./v2/session.service";
 
 @Module({
   imports: [
@@ -32,7 +34,7 @@ import { SessionService } from "./session.service";
     BookingModule,
     AnalyticsModule,
   ],
-  controllers: [SessionController],
-  providers: [SessionService],
+  controllers: [SessionController, SessionControllerV2],
+  providers: [SessionService, SessionServiceV2],
 })
 export class SessionModule {}
