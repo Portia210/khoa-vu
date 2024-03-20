@@ -34,3 +34,5 @@ dist/
 
 .env
 .env*
+# Sentry Config File
+.sentryclirc
