@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "nest build && pnpm sentry:sourcemaps",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -17,7 +17,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org agent-space --project agent-space-crawler ./dist && sentry-cli sourcemaps upload --org agent-space --project agent-space-crawler ./dist"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -27,6 +28,7 @@
     "@nestjs/mongoose": "^10.0.2",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^4.0.0",
+    "@sentry/cli": "^2.30.2",
     "@sentry/node": "^7.107.0",
     "@sentry/profiling-node": "^7.107.0",
     "@sentry/tracing": "^7.107.0",
