@@ -6,7 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build && pnpm sentry:sourcemaps",
+    "build": "nest build",
+    "build:sentry": "npx sentry-cli login --auth-token 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 && pnpm build && pnpm sentry:sourcemaps",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
