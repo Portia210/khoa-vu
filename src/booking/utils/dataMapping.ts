@@ -1,21 +1,21 @@
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
-import { CrawlerCommand } from 'src/shared/types/CrawlerCommand';
-import { BOOKING_API } from '../constants';
+import { CrawlerCommand } from "src/shared/types/CrawlerCommand";
+import { BOOKING_API } from "../constants";
 import type {
   BookingBasicPropertyData,
   BookingHotelPhotos,
   BookingHotelResult,
-} from '../types/booking.hotel.response';
+} from "../types/booking.hotel.response";
 
 export const dataMapping = (
   command: CrawlerCommand,
-  hotelResults: BookingHotelResult[],
+  hotelResults: BookingHotelResult[]
 ) => {
   return hotelResults?.map((hotelResult) => {
     const sumPrice = hotelResult?.blocks?.reduce(
       (a, b) => a + b.finalPrice.amount,
-      0,
+      0
     );
     return {
       hotel_id: hotelResult?.basicPropertyData?.id,
@@ -37,13 +37,13 @@ export const dataMapping = (
 // aid is the affiliate id
 const getBookingLink = (
   command: CrawlerCommand,
-  basicPropertyData: BookingBasicPropertyData,
+  basicPropertyData: BookingBasicPropertyData
 ): string => {
   const baseUrl = `https://www.booking.com/hotel/${basicPropertyData?.location?.countryCode}/${basicPropertyData.pageName}.en-gb.html`;
 
   const url = new URLSearchParams({
-    checkin: dayjs(command?.checkInDate).format('YYYY-MM-DD'),
-    checkout: dayjs(command?.checkOutDate).format('YYYY-MM-DD'),
+    checkin: dayjs(command?.checkInDate).format("YYYY-MM-DD"),
+    checkout: dayjs(command?.checkOutDate).format("YYYY-MM-DD"),
     dest_id: command?.destination?.placeId,
     dest_type: command.destination?.dest_type,
     group_adults: command?.adult?.toString(),
@@ -53,8 +53,8 @@ const getBookingLink = (
     req_children: command?.children?.toString(),
   });
   for (const childAge of command?.childrenAges) {
-    url.append('req_age', childAge?.toString());
-    url.append('age', childAge?.toString());
+    url.append("req_age", childAge?.toString());
+    url.append("age", childAge?.toString());
   }
   return `${baseUrl}?${url.toString()}`;
 };

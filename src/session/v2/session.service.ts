@@ -125,7 +125,6 @@ export class SessionServiceV2 {
         });
       });
     }
-
     return {
       results,
     };

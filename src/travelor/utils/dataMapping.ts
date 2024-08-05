@@ -1,11 +1,11 @@
-import dayjs from 'dayjs';
-import { CrawlerCommand } from 'src/shared/types/CrawlerCommand';
-import type { TravelorHotelData } from '../types';
+import dayjs from "dayjs";
+import { CrawlerCommand } from "src/shared/types/CrawlerCommand";
+import type { TravelorHotelData } from "../types";
 
 const dataMapping = (
   command: CrawlerCommand,
   sessionId: string,
-  travelorHotelsData: TravelorHotelData[],
+  travelorHotelsData: TravelorHotelData[]
 ) => {
   return travelorHotelsData?.map((hotel) => {
     const travelorLink = `https://www.travelor.com/hotels/place/${hotel?.hotel?.country?.slug}/${hotel?.hotel_id}`;
@@ -20,6 +20,8 @@ const dataMapping = (
       stars: hotel?.stars,
       reviews: hotel?.reviews,
       jobId: command?._id,
+      travelor_geoloc: hotel?.geoloc,
+      travelor_distance: hotel?.distance,
     };
   });
 };
@@ -27,13 +29,15 @@ const dataMapping = (
 const createTravelorLink = (
   command: CrawlerCommand,
   sessionId: string,
-  orginalLink: string,
+  orginalLink: string
 ) => {
   return `${orginalLink}?fid=&check_in=${dayjs(command?.checkInDate).format(
-    'YYYY-MM-DD',
-  )}&check_out=${dayjs(command?.checkOutDate).format('YYYY-MM-DD')}&guests=${
+    "YYYY-MM-DD"
+  )}&check_out=${dayjs(command?.checkOutDate).format("YYYY-MM-DD")}&guests=${
     command?.guests
-  }&country=${command?.countryCode?.toUpperCase() || 'US'}&currency=ILS&session=${sessionId}`;
+  }&country=${
+    command?.countryCode?.toUpperCase() || "US"
+  }&currency=ILS&session=${sessionId}`;
 };
 
 export { dataMapping };

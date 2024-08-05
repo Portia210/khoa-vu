@@ -74,6 +74,8 @@ export const filterAllTravelorHotel = (travelorJobId: string) => [
       travelorPrice: { $min: "$price.amount" },
       travelorCurrency: { $first: "$price.currency" },
       travelorLink: { $first: "$travelor_link" },
+      travelorGeo: { $first: "$travelor_geoloc" },
+      travelorDistance: { $first: "$travelor_distance" },
     },
   },
   {
@@ -86,6 +88,8 @@ export const filterAllTravelorHotel = (travelorJobId: string) => [
       travelorPrice: 1,
       travelorCurrency: 1,
       travelorLink: 1,
+      travelorGeo: 1,
+      travelorDistance: 1,
     },
   },
 ];
@@ -103,7 +107,7 @@ export const filterAllBookingHotel = (bookingJobId: string) => [
       title: { $first: "$title" },
       stars: { $first: "$stars" },
       rate: { $first: "$rate" },
-      distance: { $first: "$distance" },
+      bookingDistance: { $first: "$distance" },
       picture_link: { $first: "$picture_link" },
       bookingPrice: { $min: "$price.amount" },
       bookingCurrency: { $first: "$price.currency" },
@@ -120,6 +124,7 @@ export const filterAllBookingHotel = (bookingJobId: string) => [
       bookingPrice: 1,
       bookingCurrency: 1,
       bookingLink: 1,
+      bookingDistance: 1,
     },
   },
 ];

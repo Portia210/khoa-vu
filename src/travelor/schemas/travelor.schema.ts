@@ -34,6 +34,12 @@ export class TravelorHotel extends Document {
 
   @Prop({ required: true, type: String })
   jobId: string;
+
+  @Prop({ required: false, type: Object })
+  travelor_geoloc: object;
+
+  @Prop({ required: false, type: Number })
+  travelor_distance: number;
 }
 
 export const TravelorHotelSchema = SchemaFactory.createForClass(TravelorHotel);
