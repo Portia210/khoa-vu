@@ -15,6 +15,7 @@ import {
   TravelorHotelData,
   TravelorHotelResponse,
   TravelorHotelStatus,
+  TravelorSearchQuery,
 } from "./types";
 import { commandMapper } from "./utils/commandMapper";
 import { dataMapping } from "./utils/dataMapping";
@@ -57,9 +58,15 @@ export class TravelorService {
   private async syncData(
     command: CrawlerCommand,
     sessionId: string,
-    hotels: TravelorHotelData[]
+    hotels: TravelorHotelData[],
+    travelorSearchQuery: TravelorSearchQuery
   ) {
-    const dataMapped = dataMapping(command, sessionId, hotels);
+    const dataMapped = dataMapping(
+      command,
+      sessionId,
+      hotels,
+      travelorSearchQuery
+    );
 
     const bulkOps = dataMapped.map((hotel: any) => ({
       updateOne: {
@@ -118,7 +125,7 @@ export class TravelorService {
       params
     );
     const hotels = data.hotelsData;
-    this.syncData(command, sessionId, hotels);
+    this.syncData(command, sessionId, hotels, data.search);
     const { totalResults, status } = this.getResponseStatus(data);
     params = new URLSearchParams({
       sort_by: "distance",
@@ -155,6 +162,7 @@ export class TravelorService {
     }).then((res) => res.json());
     return {
       hotelsData: response?.data,
+      search: response?.search,
       session: response?.session,
       meta: response?.meta,
       status: response?.status,

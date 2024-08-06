@@ -76,6 +76,7 @@ export const filterAllTravelorHotel = (travelorJobId: string) => [
       travelorLink: { $first: "$travelor_link" },
       travelorGeo: { $first: "$travelor_geoloc" },
       travelorDistance: { $first: "$travelor_distance" },
+      travelorSearchQuery: { $first: "$travelor_search_query" },
     },
   },
   {
@@ -90,6 +91,7 @@ export const filterAllTravelorHotel = (travelorJobId: string) => [
       travelorLink: 1,
       travelorGeo: 1,
       travelorDistance: 1,
+      travelorSearchQuery: 1,
     },
   },
 ];

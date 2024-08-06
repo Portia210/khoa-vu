@@ -1,11 +1,12 @@
 import dayjs from "dayjs";
 import { CrawlerCommand } from "src/shared/types/CrawlerCommand";
-import type { TravelorHotelData } from "../types";
+import type { TravelorHotelData, TravelorSearchQuery } from "../types";
 
 const dataMapping = (
   command: CrawlerCommand,
   sessionId: string,
-  travelorHotelsData: TravelorHotelData[]
+  travelorHotelsData: TravelorHotelData[],
+  travelorSearchQuery: TravelorSearchQuery
 ) => {
   return travelorHotelsData?.map((hotel) => {
     const travelorLink = `https://www.travelor.com/hotels/place/${hotel?.hotel?.country?.slug}/${hotel?.hotel_id}`;
@@ -22,6 +23,7 @@ const dataMapping = (
       jobId: command?._id,
       travelor_geoloc: hotel?.geoloc,
       travelor_distance: hotel?.distance,
+      travelor_search_query: travelorSearchQuery,
     };
   });
 };

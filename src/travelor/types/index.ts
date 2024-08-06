@@ -1,13 +1,31 @@
 export interface TravelorHotelResponse {
   hotelsData: TravelorHotelData[];
+  search: TravelorSearchQuery;
   session: string;
   meta: any;
-  status: 'running' | 'finished';
+  status: "running" | "finished";
+}
+
+export interface TravelorSearchQuery {
+  aggregator: string;
+  type: string;
+  latitude: number;
+  longitude: number;
+  radius: number;
+  check_in: string;
+  check_out: string;
+  guests: string;
+  country: string;
+  currency: string;
+  net: number;
+  query_text: string;
+  place_id: string;
+  client_currency: string;
 }
 
 export interface TravelorHotelStatus {
   totalResults: number;
-  status: 'running' | 'finished';
+  status: "running" | "finished";
 }
 
 export interface TravelorHotelData {
