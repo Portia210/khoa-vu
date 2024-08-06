@@ -40,6 +40,9 @@ export class TravelorHotel extends Document {
 
   @Prop({ required: false, type: Number })
   travelor_distance: number;
+
+  @Prop({ required: false, type: Object })
+  travelor_search_query: object;
 }
 
 export const TravelorHotelSchema = SchemaFactory.createForClass(TravelorHotel);

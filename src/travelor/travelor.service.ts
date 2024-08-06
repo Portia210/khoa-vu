@@ -160,6 +160,7 @@ export class TravelorService {
         authorization: TRAVERLOR_CONFIG.BEARER_TOKEN,
       },
     }).then((res) => res.json());
+    console.log("response search", response?.search);
     return {
       hotelsData: response?.data,
       search: response?.search,
